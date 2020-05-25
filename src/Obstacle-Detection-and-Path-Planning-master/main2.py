@@ -25,6 +25,20 @@ TCP_PORT = 5005
 # s.connect((TCP_IP, TCP_PORT))
 
 
+# default size of the grid and the frame
+grid_size = 64
+frame_height= 640
+frame_width= 640
+
+
+print('enter the grid size')
+grid_size = int(input())
+print('enter the frame_height')
+frame_height = int(input())
+print('enter the frame_width')
+frame_width = int(input())
+
+
 
 position = []
 def draw_circle(event , x, y, flags, param):
@@ -33,6 +47,7 @@ def draw_circle(event , x, y, flags, param):
         position.append((x, y))
 
 
+# deque for movement detection
 pt = deque(maxlen=10)
 cap1 = cv2.VideoCapture(0)
 
@@ -41,12 +56,13 @@ cap1 = cv2.VideoCapture(0)
 cv2.namedWindow('window1')
 cv2.setMouseCallback('window1' , draw_circle)
 
+# function to draw the source and destination
 
 while True:
 
     _, frame1 = cap1.read()
 
-    frame1 = cv2.resize(frame1,(640, 640))
+    frame1 = cv2.resize(frame1,(frame_width, frame_height))
     if len(position):
         for i in range(len(position)):
             source = (position[i][0], position[i][1])
@@ -67,11 +83,11 @@ cv2.destroyAllWindows()
 source = []
 dest = []
 if len(position)==2:
-    source =  (position[0][0]/64, position[0][1]/64)
-    dest = (position[1][0]/64 , position[1][1]/64)
+    source =  (position[0][0]//grid_size, position[0][1]//grid_size)
+    dest = (position[1][0]//grid_size , position[1][1]//grid_size)
 cap = cv2.VideoCapture(0)
 
-occupied_grids, planned_path = process_image.main(source , dest,cap)
+occupied_grids, planned_path = process_image.main(source , dest,cap,grid_size, frame_width, frame_height)
 
 
 
@@ -81,30 +97,11 @@ print("actual coordinates")
 path = []
 
 for x, y in planned_path:
-    path.append((x*64, y*64))
+    path.append((x*grid_size, y*grid_size))
 
 print(path)
 
-frame = np.zeros((640,640,3),np.uint8)
-
-print("printing the command for the car")
-command = list()
-
-
-for x in range(len(planned_path)-1) :
-    i, j = planned_path[x]
-    p, q = planned_path[x+1]
-
-    if p==i+1:
-        command.append('L')
-    if p==i-1:
-        command.append('R')
-    if q==j+1:
-        command.append('F')
-    if q==j-1:
-        command.append('B')
-
-print(command)                                        
+frame = np.zeros((frame_width, frame_height,3),np.uint8)
 
 qt = list()
 
@@ -128,13 +125,16 @@ while True:
 
     _, frame = cap.read()
 
-    frame = cv2.resize(frame,(640, 640))
+    frame = cv2.resize(frame,(frame_width, frame_height))
+
+    # making the paths from source to desination 
 
     new_frame= cv2.polylines(frame, [pts] , False, (255,120,255), 3)
     cv2.imshow('window', new_frame)
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            # we are only allowing the given color range in the hsv model 
+    
+    # we are only allowing the given color range in the hsv model 
     kernel = np.ones((6,6), np.uint8)
 
     mask = cv2.inRange(hsv , color_l , color_h)
@@ -155,8 +155,8 @@ while True:
         ((x, y), radius) = cv2.minEnclosingCircle(c)
         M = cv2.moments(c)
         if M["m00"] != 0:
-            cX = int(M["m10"] / M["m00"])
-            cY = int(M["m01"] / M["m00"])
+            cX = int(M["m10"] // M["m00"])
+            cY = int(M["m01"] // M["m00"])
         else:
             cX, cY = 0, 0
         center = (cX , cY)
@@ -171,8 +171,8 @@ while True:
 
 
     # these coordinates coorsponds to the current position of the car 
-    xt = cX/64
-    yt = cY/64      
+    xt = cX/grid_size
+    yt = cY/grid_size
 
     if index!=len(qt):
 
@@ -191,7 +191,7 @@ while True:
             # print(xt, yt)
             index+=1
 
-    print(SEND_COMMAND)
+    # print(SEND_COMMAND)
     # s.send(str(SEND_COMMAND))
 
     if len(position):
@@ -208,14 +208,14 @@ while True:
             continue
                 # otherwise, compute the thickness of the line and
                 # draw the connecting lines
-        thickness = int(np.sqrt(30 / float(i + 1)) * 2.5)
+        thickness = int(np.sqrt(30 // float(i + 1)) * 2.5)
         cv2.line(frame, pt[i - 1], pt[i], (0, 0, 255), thickness)
              
 
     
     cv2.imshow('window', frame)
 
-    time.sleep(0.8)
+    time.sleep(0.05)
     k = cv2.waitKey(2) & 0xFF
     
     if k == 27:

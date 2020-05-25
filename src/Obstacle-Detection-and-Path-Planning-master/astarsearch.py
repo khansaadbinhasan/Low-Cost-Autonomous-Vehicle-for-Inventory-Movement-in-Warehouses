@@ -1,5 +1,5 @@
-def astar(m,startp,endp):
-    w,h = 10,10	# 10x10(blocks) is the dimension of the input images
+def astar(m,startp,endp,x,y):
+    w,h = x,y
     sx,sy = startp 	#Start Point
     ex,ey = endp 	#End Point
     #[parent node, x, y, g, f]
@@ -34,7 +34,7 @@ def astar(m,startp,endp):
                     nni = len(closeList)
                     closeList.append(nn)
                     while nni:
-                        i = (nni-1)>>1
+                        i = (nni-1)//2
                         if closeList[i][4]>nn[4]:
                             closeList[i],closeList[nni] = nn,closeList[i]
                             nni = i
