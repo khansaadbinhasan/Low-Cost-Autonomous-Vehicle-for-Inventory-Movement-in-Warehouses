@@ -120,6 +120,8 @@ color_h = np.array([148, 255, 255])
 index = 0 # index of the list qt
 
 # for choosing the source and destination on the given frame
+flag = 1
+
 
 while True:
 
@@ -174,24 +176,27 @@ while True:
     xt = cX/grid_size
     yt = cY/grid_size
 
+
     if index!=len(qt):
 
         tempx, tempy = qt[index]
 
         if xt==tempx+1:
             SEND_COMMAND = LEFT
-        if xt==tempx-1:
+        elif xt==tempx-1:
             SEND_COMMAND = RIGHT
-        if yt==tempy+1:
+        elif yt==tempy+1:
             SEND_COMMAND = UP
-        if yt==tempy-1:
+        elif yt==tempy-1:
             SEND_COMMAND = DOWN
 
         if xt == tempx and yt==tempy:
-            # print(xt, yt)
-            index+=1
-
-    # print(SEND_COMMAND)
+        	flag=1
+        	index+=1
+    # send command will be printed as the signal for the car
+    if (flag ):
+    	print('Action ' + SEND_COMMAND)
+    	flag = 0
     # s.send(str(SEND_COMMAND))
 
     if len(position):
