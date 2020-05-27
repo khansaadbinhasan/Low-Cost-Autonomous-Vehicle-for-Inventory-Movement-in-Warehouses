@@ -1,5 +1,5 @@
 Dependencies to install <br/>
-python -m pip install --user opencv-contrib-python</br>
+python3 -m pip install --user opencv-contrib-python</br>
 <br/>
 Steps <br/>
 1. To run - python3 main2.py<br/>
