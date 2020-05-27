@@ -1,3 +1,4 @@
+*.pyc
 /Demo/*
 /Code\ Old/*
 /src/rpi/testing.py
