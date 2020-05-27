@@ -6,7 +6,7 @@ import imutils
 from collections import deque
 import time
 import socket
-
+from parameters import numCam
 
 
 STOP = '0'
@@ -38,7 +38,7 @@ def draw_circle(event , x, y, flags, param):
 
 # for selecting source and destination
 
-cap1 = cv2.VideoCapture(2)
+cap1 = cv2.VideoCapture(numCam)
 
 
 '''
@@ -140,9 +140,9 @@ print(smooth_path)
 '''
 
 # print('print1')
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(numCam)
 
-# cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(numCam)
 
 # blue = 110 - 130
 color_l  = np.array([114, 57, 73])

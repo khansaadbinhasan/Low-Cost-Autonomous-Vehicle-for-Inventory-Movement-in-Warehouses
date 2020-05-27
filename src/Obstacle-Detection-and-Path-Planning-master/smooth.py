@@ -1,4 +1,5 @@
 import numpy
+
 def smoothListGaussian(list, degree=5):
     window = degree*2-1
     weight = numpy.array([1.0]*window)

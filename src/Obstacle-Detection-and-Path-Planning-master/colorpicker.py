@@ -6,6 +6,7 @@
 import cv2
 import argparse
 from operator import xor
+from parameters import numCam
 
 def callback(value):
     pass
@@ -60,7 +61,7 @@ def main():
         else:
             frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     else:
-        camera = cv2.VideoCapture(0)
+        camera = cv2.VideoCapture(numCam)
 
     setup_trackbars(range_filter)
 

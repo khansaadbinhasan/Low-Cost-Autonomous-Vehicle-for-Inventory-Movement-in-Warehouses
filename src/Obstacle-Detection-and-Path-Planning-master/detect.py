@@ -3,9 +3,10 @@ import imutils
 from collections import deque
 import numpy as np
 import time
+from parameters import numCam
 
 def detection():
-		cap = cv2.VideoCapture(0)
+		cap = cv2.VideoCapture(numCam)
 
 		color_l  = (170, 86, 6)
 		color_h = (180, 255, 255)

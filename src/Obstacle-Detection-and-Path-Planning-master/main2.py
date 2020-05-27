@@ -8,6 +8,9 @@ import time
 import socket
 
 
+from parameters import numCam
+
+
 STOP = '0'
 UP = '1'
 DOWN = '2'
@@ -21,8 +24,8 @@ SEND_COMMAND = STOP
 TCP_IP = '192.168.43.208' # IP of raspberry pi
 TCP_PORT = 5005
 
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s.connect((TCP_IP, TCP_PORT))
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((TCP_IP, TCP_PORT))
 
 
 # default size of the grid and the frame
@@ -31,12 +34,12 @@ frame_height= 640
 frame_width= 640
 
 
-print('enter the grid size')
-grid_size = int(input())
-print('enter the frame_height')
-frame_height = int(input())
-print('enter the frame_width')
-frame_width = int(input())
+# print('enter the grid size')
+# grid_size = int(input())
+# print('enter the frame_height')
+# frame_height = int(input())
+# print('enter the frame_width')
+# frame_width = int(input())
 
 
 
@@ -49,7 +52,7 @@ def draw_circle(event , x, y, flags, param):
 
 # deque for movement detection
 pt = deque(maxlen=10)
-cap1 = cv2.VideoCapture(0)
+cap1 = cv2.VideoCapture(numCam)
 
 
 
@@ -85,7 +88,7 @@ dest = []
 if len(position)==2:
     source =  (position[0][0]//grid_size, position[0][1]//grid_size)
     dest = (position[1][0]//grid_size , position[1][1]//grid_size)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(numCam)
 
 occupied_grids, planned_path = process_image.main(source , dest,cap,grid_size, frame_width, frame_height)
 
@@ -191,8 +194,8 @@ while True:
             # print(xt, yt)
             index+=1
 
-    # print(SEND_COMMAND)
-    # s.send(str(SEND_COMMAND))
+    print(SEND_COMMAND)
+    s.send(str(SEND_COMMAND).encode())
 
     if len(position):
         for i in range(len(position)):
@@ -222,8 +225,8 @@ while True:
         break 
 
 
-# SEND_COMMAND = STOP
-# s.send(str(SEND_COMMAND))
-# s.close()
+SEND_COMMAND = STOP
+s.send(str(SEND_COMMAND).encode())
+s.close()
 cap.release()
 cv2.destroyAllWindows()
