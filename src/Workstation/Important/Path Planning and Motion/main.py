@@ -1,6 +1,4 @@
-import process_image
 import cv2
-import smooth
 import numpy as np
 import imutils
 from collections import deque
@@ -9,6 +7,8 @@ import socket
 
 
 from parameters import numCam, robotHSVlow, robotHSVhigh
+import process_image
+
 
 
 STOP = '0'
@@ -20,7 +20,7 @@ LEFT = '4'
 SEND_COMMAND = STOP
 
 
-# # Setting up TCP connection
+# Setting up TCP connection
 TCP_IP = '192.168.43.208' # IP of raspberry pi
 TCP_PORT = 5005
 
@@ -29,18 +29,9 @@ s.connect((TCP_IP, TCP_PORT))
 
 
 # default size of the grid and the frame
-grid_size = 64
+grid_size = 320
 frame_height= 640
 frame_width= 640
-
-
-# print('enter the grid size')
-# grid_size = int(input())
-# print('enter the frame_height')
-# frame_height = int(input())
-# print('enter the frame_width')
-# frame_width = int(input())
-
 
 
 position = []
@@ -60,7 +51,6 @@ cv2.namedWindow('window1')
 cv2.setMouseCallback('window1' , draw_circle)
 
 # function to draw the source and destination
-
 while True:
 
     _, frame1 = cap1.read()
@@ -83,11 +73,14 @@ while True:
 cap1.release()
 cv2.destroyAllWindows()
 
+
 source = []
 dest = []
+
 if len(position)==2:
     source =  (position[0][0]//grid_size, position[0][1]//grid_size)
     dest = (position[1][0]//grid_size , position[1][1]//grid_size)
+
 cap = cv2.VideoCapture(numCam)
 
 occupied_grids, planned_path = process_image.main(source , dest,cap,grid_size, frame_width, frame_height)
