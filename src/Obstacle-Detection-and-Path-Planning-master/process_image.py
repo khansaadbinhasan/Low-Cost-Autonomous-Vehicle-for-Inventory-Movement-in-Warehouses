@@ -96,7 +96,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height):
 		flag = 0
 		for i in  palette:
 			if (all(j<=40 for j in i)):
-				print(i)
+				# print(i)
 				if (flag==0):
 					maze[index[1]-1][index[0]-1] = 1		
 					cv2.rectangle(image, (x, y),(x + winW, y + winH), (255, 0, 0),-1)		
@@ -111,7 +111,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height):
 		# cv2.imshow("bar", bar)
 		cv2.imshow("display_Window", clone)
 		cv2.waitKey(1)
-		time.sleep(0.04)
+		time.sleep(0.01)
 	
 		#Iterate
 		index[1] = index[1] + 1							
@@ -122,10 +122,13 @@ def main(source , dest, cap, grid_size,frame_width, frame_height):
 	# Apply astar algorithm on the give maze image 
 	res = [[maze[j][i] for j in range(len(maze))] for i in range(len(maze[0]))]
 	result = astarsearch.astar(res,(source[0],source[1]),(dest[0],dest[1]), frame_width//grid_size, frame_height//grid_size)
-	for i in range(len(maze)):
-		for j in range(len(maze[0])):
-			print(res[i][j],end=" ")
-		print(" ")	
+	
+	# printing the maze for checking
+	# for i in range(len(maze)):
+	# 	for j in range(len(maze[0])):
+	# 		print(res[i][j],end=" ")
+	# 	print(" ")	
+	
 	list2=[]
 	# print(result)
 	for t in result:
