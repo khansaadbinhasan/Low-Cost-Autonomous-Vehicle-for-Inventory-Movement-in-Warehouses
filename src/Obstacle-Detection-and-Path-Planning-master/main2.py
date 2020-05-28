@@ -1,6 +1,6 @@
 import process_image
 import cv2
-import smooth
+# import smooth
 import numpy as np
 import imutils
 from collections import deque
@@ -43,8 +43,8 @@ SEND_COMMAND = STOP
 TCP_IP = '192.168.43.208' # IP of raspberry pi
 TCP_PORT = 5005
 
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s.connect((TCP_IP, TCP_PORT))
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((TCP_IP, TCP_PORT))
 
 
 # default size of the grid and the frame
@@ -195,13 +195,16 @@ while True:
     
 
 
-    xt = cX/grid_size
-    yt = cY/grid_size
+    xt = cX//grid_size
+    yt = cY//grid_size
 
 
     if index!=len(qt):
 
         tempx, tempy = qt[index]
+
+        # print(xt, tempx)
+        # print(yt, tempy)
 
         if xt==tempx+1:
             SEND_COMMAND = LEFT
@@ -223,7 +226,7 @@ while True:
 
     
     print(SEND_COMMAND)
-    # s.send(str(SEND_COMMAND).encode())
+    s.send(str(SEND_COMMAND).encode())
 
     if len(position):
         for i in range(len(position)):
