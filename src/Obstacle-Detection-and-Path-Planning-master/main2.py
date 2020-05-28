@@ -243,7 +243,7 @@ while True:
              
 
     
-    cv2.imshow('window', frame)
+    cv2.imshow('window', img)
 
     time.sleep(0.05)
     k = cv2.waitKey(2) & 0xFF
