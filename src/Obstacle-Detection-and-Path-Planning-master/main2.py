@@ -43,24 +43,24 @@ SEND_COMMAND = STOP
 TCP_IP = '192.168.43.208' # IP of raspberry pi
 TCP_PORT = 5005
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((TCP_IP, TCP_PORT))
+# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# s.connect((TCP_IP, TCP_PORT))
 
 
 # default size of the grid and the frame
 grid_size = 64
 frame_height= 640
 frame_width= 640
+decision = 0
 
-
-print('enter the grid size')
-grid_size = int(input())
-print('enter the frame_height')
-frame_height = int(input())
-print('enter the frame_width')
-frame_width = int(input())
-print('With object detection or not--> 0= NO and 1= YES')
-decision = input()
+# print('enter the grid size')
+# grid_size = int(input())
+# print('enter the frame_height')
+# frame_height = int(input())
+# print('enter the frame_width')
+# frame_width = int(input())
+# print('With object detection or not--> 0= NO and 1= YES')
+# decision = input()
 
 
 position = []
@@ -162,7 +162,11 @@ while True:
     success, img = cap.read()
     success, bbox = tracker.update(img)
  
+
+
     if success:
+        # print(success)
+        
         drawBox(img,bbox)
         x = int((bbox[0] + bbox[2])/2)
         y = int((bbox[1] + bbox[3])/2)
@@ -219,7 +223,7 @@ while True:
 
     
     print(SEND_COMMAND)
-    s.send(str(SEND_COMMAND).encode())
+    # s.send(str(SEND_COMMAND).encode())
 
     if len(position):
         for i in range(len(position)):
