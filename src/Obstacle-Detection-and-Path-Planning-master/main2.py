@@ -10,6 +10,25 @@ import socket
 
 from parameters import numCam, robotHSVlow, robotHSVhigh
 
+############### Tracker Types #####################
+ 
+#tracker = cv2.TrackerBoosting_create()
+#tracker = cv2.TrackerMIL_create()
+#tracker = cv2.TrackerKCF_create()
+#tracker = cv2.TrackerTLD_create()
+#tracker = cv2.TrackerMedianFlow_create()
+#tracker = cv2.TrackerCSRT_create()
+
+tracker = cv2.TrackerMOSSE_create()
+
+
+def drawBox(img,bbox):
+    x, y, w, h = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
+    cv2.rectangle(img, (x, y), ((x + w), (y + h)), (255, 0, 255), 3, 3 )
+    cv2.putText(img, "Tracking", (100, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
+
+
 
 STOP = '0'
 UP = '1'
@@ -34,13 +53,14 @@ frame_height= 640
 frame_width= 640
 
 
-# print('enter the grid size')
-# grid_size = int(input())
-# print('enter the frame_height')
-# frame_height = int(input())
-# print('enter the frame_width')
-# frame_width = int(input())
-
+print('enter the grid size')
+grid_size = int(input())
+print('enter the frame_height')
+frame_height = int(input())
+print('enter the frame_width')
+frame_width = int(input())
+print('With object detection or not--> 0= NO and 1= YES')
+decision = input()
 
 
 position = []
@@ -90,7 +110,7 @@ if len(position)==2:
     dest = (position[1][0]//grid_size , position[1][1]//grid_size)
 cap = cv2.VideoCapture(numCam)
 
-occupied_grids, planned_path = process_image.main(source , dest,cap,grid_size, frame_width, frame_height)
+occupied_grids, planned_path = process_image.main(source , dest,cap,grid_size, frame_width, frame_height,decision)
 
 
 
@@ -117,8 +137,8 @@ for x in range(len(planned_path)):
 
 pts = np.array(path , np.int32)
 
-color_l  = np.array([robotHSVlow['Hue'], robotHSVlow['Sat'], robotHSVlow['Val'] ])
-color_h = np.array([robotHSVhigh['Hue'], robotHSVhigh['Sat'], robotHSVhigh['Val']])
+# color_l  = np.array([robotHSVlow['Hue'], robotHSVlow['Sat'], robotHSVlow['Val'] ])
+# color_h = np.array([robotHSVhigh['Hue'], robotHSVhigh['Sat'], robotHSVhigh['Val']])
 
 index = 0 # index of the list qt
 
@@ -126,56 +146,51 @@ index = 0 # index of the list qt
 flag = 1
 
 
+success, frame = cap.read()
+bbox = cv2.selectROI("Tracking",frame, False)
+tracker.init(frame, bbox)
+
+
+ # center = None
+cX = 0
+cY = 0
+
+
 while True:
 
-    _, frame = cap.read()
+    timer = cv2.getTickCount()
+    success, img = cap.read()
+    success, bbox = tracker.update(img)
+ 
+    if success:
+        drawBox(img,bbox)
+        x = int((bbox[0] + bbox[2])/2)
+        y = int((bbox[1] + bbox[3])/2)
+        cX = x
+        cY = y
+        cv2.putText(img,str(x) + " " +str(y), (int(bbox[0]),int(bbox[1])), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-    frame = cv2.resize(frame,(frame_width, frame_height))
+    else:
+        cv2.putText(img, "Lost", (100, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+ 
+    cv2.rectangle(img,(15,15),(200,90),(255,0,255),2)
+    # cv2.putText(img, "Fps:", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,0,255), 2);
+    # cv2.putText(img, "Status:", (20, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 255), 2);
+ 
+ 
+    fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
+    if fps>60: myColor = (20,230,20)
+    elif fps>20: myColor = (230,20,20)
+    else: myColor = (20,20,230)
+    cv2.putText(img,str(int(fps)), (75, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, myColor, 2);
+ 
+    img= cv2.polylines(img, [pts] , False, (255,120,255), 3)
 
-    # making the paths from source to desination 
-
-    new_frame= cv2.polylines(frame, [pts] , False, (255,120,255), 3)
-    cv2.imshow('window', new_frame)
-
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     
-    # we are only allowing the given color range in the hsv model 
-    kernel = np.ones((6,6), np.uint8)
-
-    mask = cv2.inRange(hsv , color_l , color_h)
+    # cv2.imshow('window', img)
     
-    mask = cv2.erode(mask, kernel, iterations=2)
-    mask = cv2.morphologyEx(mask , cv2.MORPH_OPEN, kernel)
-    mask = cv2.dilate(mask, kernel, iterations=1)
-
-    red_mask = cv2.bitwise_and(frame, frame, mask = mask)
-    cnts,_= cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[-2:]
-    center = None
-
-    cX = 0
-    cY = 0
-
-    if len(cnts) > 0:
-        c = max(cnts, key=cv2.contourArea)
-        ((x, y), radius) = cv2.minEnclosingCircle(c)
-        M = cv2.moments(c)
-        if M["m00"] != 0:
-            cX = int(M["m10"] // M["m00"])
-            cY = int(M["m01"] // M["m00"])
-        else:
-            cX, cY = 0, 0
-        center = (cX , cY)
-
-        # only proceed if the radius meets a minimum size
-        if radius > 5:
-            # draw the circle and centroid on the frame,
-            # then update the list of tracked points
-            cv2.circle(frame, (int(x), int(y)), int(radius),
-                (0, 255, 255), 2)
-            cv2.circle(frame, center, 5, (0, 0, 255), -1)
 
 
-    # these coordinates coorsponds to the current position of the car 
     xt = cX/grid_size
     yt = cY/grid_size
 
@@ -209,19 +224,19 @@ while True:
     if len(position):
         for i in range(len(position)):
             source = (position[i][0], position[i][1])
-            cv2.circle(frame,source, 10, (255, 0, 0), -1)
+            cv2.circle(img,source, 10, (255, 0, 0), -1)
 
-    pt.appendleft(center)
+    # pt.appendleft(center)
                     
-    for i in range(1, len(pt)):
-                # if either of the tracked points are None, ignore
-                # them
-        if pt[i - 1] is None or pt[i] is None:
-            continue
-                # otherwise, compute the thickness of the line and
-                # draw the connecting lines
-        thickness = int(np.sqrt(30 // float(i + 1)) * 2.5)
-        cv2.line(frame, pt[i - 1], pt[i], (0, 0, 255), thickness)
+    # for i in range(1, len(pt)):
+    #             # if either of the tracked points are None, ignore
+    #             # them
+    #     if pt[i - 1] is None or pt[i] is None:
+    #         continue
+    #             # otherwise, compute the thickness of the line and
+    #             # draw the connecting lines
+    #     thickness = int(np.sqrt(30 // float(i + 1)) * 2.5)
+    #     cv2.line(frame, pt[i - 1], pt[i], (0, 0, 255), thickness)
              
 
     

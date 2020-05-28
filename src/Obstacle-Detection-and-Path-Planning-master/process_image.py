@@ -7,7 +7,7 @@ from sklearn.cluster import KMeans
 from skimage import io
 import matplotlib.pyplot as plt
 
-def main(source , dest, cap, grid_size,frame_width, frame_height):
+def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 
 	occupied_grids = []		# List to store coordinates of occupied grid 
 	planned_path = {}		# Dictionary to store information regarding path planning  	
@@ -93,19 +93,20 @@ def main(source , dest, cap, grid_size,frame_width, frame_height):
 		# 	occupied_grids.append(tuple(index))	
 
 		# this is used for is there any black in the window 
-		flag = 0
-		for i in  palette:
-			if (all(j<=40 for j in i)):
-				# print(i)
-				if (flag==0):
-					maze[index[1]-1][index[0]-1] = 1		
-					cv2.rectangle(image, (x, y),(x + winW, y + winH), (255, 0, 0),-1)		
-					occupied_grids.append(tuple(index))	
-					flag = 1
-		
-		cv2.putText(clone,str(maze[index[1]-1][index[0]-1]),(x, y),
-			cv2.FONT_HERSHEY_SIMPLEX ,1
-			,(255,0,0),2, cv2.LINE_AA)
+		if (decision):
+			flag = 0
+			for i in  palette:
+				if (all(j<=40 for j in i)):
+					# print(i)
+					if (flag==0):
+						maze[index[1]-1][index[0]-1] = 1		
+						cv2.rectangle(image, (x, y),(x + winW, y + winH), (255, 0, 0),-1)		
+						occupied_grids.append(tuple(index))	
+						flag = 1
+			
+			cv2.putText(clone,str(maze[index[1]-1][index[0]-1]),(x, y),
+				cv2.FONT_HERSHEY_SIMPLEX ,1
+				,(255,0,0),2, cv2.LINE_AA)
 
 		# cv2.imshow("hist", hist)
 		# cv2.imshow("bar", bar)
