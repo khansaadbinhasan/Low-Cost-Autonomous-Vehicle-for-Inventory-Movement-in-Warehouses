@@ -93,7 +93,8 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		# 	occupied_grids.append(tuple(index))	
 
 		# this is used for is there any black in the window 
-		if (decision):
+		print('decision' + str(decision))
+		if decision == 1:
 			flag = 0
 			for i in  palette:
 				if (all(j<=40 for j in i)):
