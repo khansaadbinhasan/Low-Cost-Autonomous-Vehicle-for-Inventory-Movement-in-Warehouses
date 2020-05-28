@@ -48,7 +48,7 @@ s.connect((TCP_IP, TCP_PORT))
 
 
 # default size of the grid and the frame
-grid_size = 64
+grid_size = 128
 frame_height= 640
 frame_width= 640
 decision = 0
@@ -147,6 +147,7 @@ flag = 1
 
 
 success, frame = cap.read()
+frame = cv2.resize(frame,(frame_width, frame_height))
 bbox = cv2.selectROI("Tracking",frame, False)
 tracker.init(frame, bbox)
 
@@ -160,6 +161,7 @@ while True:
 
     timer = cv2.getTickCount()
     success, img = cap.read()
+    img = cv2.resize(img,(frame_width, frame_height))
     success, bbox = tracker.update(img)
  
 
@@ -203,8 +205,8 @@ while True:
 
         tempx, tempy = qt[index]
 
-        # print(xt, tempx)
-        # print(yt, tempy)
+        print(xt, tempx)
+        print(yt, tempy)
 
         if xt==tempx+1:
             SEND_COMMAND = LEFT
