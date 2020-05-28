@@ -60,7 +60,7 @@ frame_height = int(input())
 print('enter the frame_width')
 frame_width = int(input())
 print('With object detection or not--> 0= NO and 1= YES')
-decision = input()
+decision = int(input())
 
 
 position = []
@@ -221,10 +221,13 @@ while True:
     print(SEND_COMMAND)
     s.send(str(SEND_COMMAND).encode())
 
-    if len(position):
-        for i in range(len(position)):
-            source = (position[i][0], position[i][1])
-            cv2.circle(img,source, 10, (255, 0, 0), -1)
+    if len(path):
+        for i in range(len(path)):
+            source = (path[i][0], path[i][1])
+            if i==0 or i==len(path)-1:
+                cv2.circle(img,source, 2, (255, 0, 0), 10)
+            else:
+                cv2.circle(img,source, 2, (255, 0, 0), 2) 
 
     # pt.appendleft(center)
                     
