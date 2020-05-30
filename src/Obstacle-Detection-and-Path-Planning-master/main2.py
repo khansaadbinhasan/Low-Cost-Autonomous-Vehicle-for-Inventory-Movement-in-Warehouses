@@ -8,7 +8,8 @@ import time
 import socket
 
 
-from parameters import numCam, robotHSVlow, robotHSVhigh
+from parameters import numCam, robotHSVlow, robotHSVhigh, grid_size, frame_height, frame_width, decision 
+
 
 ############### Tracker Types #####################
  
@@ -26,7 +27,6 @@ def drawBox(img,bbox):
     x, y, w, h = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
     cv2.rectangle(img, (x, y), ((x + w), (y + h)), (255, 0, 255), 3, 3 )
     cv2.putText(img, "Tracking", (100, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-
 
 
 
@@ -48,10 +48,10 @@ s.connect((TCP_IP, TCP_PORT))
 
 
 # default size of the grid and the frame
-grid_size = 128
-frame_height= 640
-frame_width= 640
-decision = 0
+# grid_size = 128
+# frame_height= 640
+# frame_width= 640
+# decision = 0
 
 # print('enter the grid size')
 # grid_size = int(input())

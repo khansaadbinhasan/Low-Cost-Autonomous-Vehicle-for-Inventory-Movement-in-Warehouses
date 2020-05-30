@@ -110,7 +110,7 @@ void move_backward(int delayTime)
 {
   // Executing this function resulted in shutting off of powerbank, most likely reason maybe since we were not only making high pins to low but also low to high
   // This may have resulted in a lot of usage of current, Hence, we first stop the robot so that current used is less. This seems to work for this particular case.
-  stop(5000);
+  stop(1000);
 
   
   //assigning input directions to motor driver 1
