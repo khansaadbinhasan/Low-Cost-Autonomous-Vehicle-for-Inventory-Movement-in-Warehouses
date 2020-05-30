@@ -156,6 +156,17 @@ tracker.init(frame, bbox)
 cX = 0
 cY = 0
 
+min_v = 9999999
+m_x, m_y = 0,0
+val = 0
+
+tempx = 0
+tempy = 0
+
+# destination of the path to reach 
+final_x, final_y = qt[-1]
+
+
 
 while True:
 
@@ -197,34 +208,75 @@ while True:
     
 
 
-    xt = cX//grid_size
-    yt = cY//grid_size
+    xt = cX
+    yt = cY
+
+    if distance(xt, yt ,final_x, final_y)<grid_size:
+        print("destination Reached")
+        break
 
 
     if index!=len(qt):
-
-        tempx, tempy = qt[index]
-
-        print(xt, tempx)
-        print(yt, tempy)
-
-        if xt==tempx+1:
-            SEND_COMMAND = LEFT
-        elif xt==tempx-1:
-            SEND_COMMAND = RIGHT
-        elif yt==tempy+1:
-            SEND_COMMAND = UP
-        elif yt==tempy-1:
-            SEND_COMMAND = DOWN
-
-        if xt == tempx and yt==tempy:
-            flag=1
+        # assume evchicle did not stop at any of the subgoal
+        if distance(tempx, tempy ,xt, yt)<grid_size:
+            print('next point')
             index+=1
+            min_v = 999999
+        tempx, tempy = qt[index]
+        tempx = tempx*grid_size
+        tempy = tempy*grid_size
+        x_est, y_est = xt, yt
 
-    # send command will be printed as the signal for the car
-    if (flag ):
-    	print('Action ' + SEND_COMMAND)
-    	flag = 0
+        print(tempx, tempy)
+        cv2.circle(img,(int(x_est), int(y_est)), 2, (0, 255, 0), 5)
+        cv2.putText(img, str(int(x_est)) + " "+ str(int(y_est)), (int(x_est), int(y_est)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255,255 ), 2)
+
+        cv2.circle(img,(int(tempx), int(tempy)), 10, (0, 255, 0), 5)
+        cv2.circle(img,(int(tempx), int(tempy)), 15, (0, 255, 0), 5)
+        cv2.putText(img, str(int(tempx)) + " "+ str(int(tempy)), (int(tempx), int(tempy)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255,255 ), 2)
+
+        p1_x, p1_y = xt + 1, yt 
+        p2_x, p2_y = xt - 1, yt 
+        p3_x, p3_y = xt , yt +1
+        p4_x, p4_y = xt , yt -1
+
+
+        if distance(p1_x, p1_y, tempx, tempy) < min_v:
+            min_v = distance(p1_x, p1_y, tempx, tempy)
+            m_x , m_y= p1_x, p1_y
+            val = RIGHT
+
+        if distance(p2_x, p2_y, tempx, tempy) < min_v:
+            min_v = distance(p2_x, p2_y, tempx, tempy)
+            m_x, m_y= p2_x, p2_y
+            val = LEFT
+        if distance(p3_x, p3_y, tempx, tempy) < min_v:
+            min_v = distance(p3_x, p3_y, tempx, tempy)
+            m_x,m_y = p3_x, p3_y
+            val = DOWN
+        if distance(p4_x, p4_y, tempx, tempy) < min_v:
+            min_v = distance(p4_x, p4_y, tempx, tempy)
+            m_x, m_y = p4_x, p4_y
+            val = UP
+
+        x_est, y_est = m_x, m_y
+        SEND_COMMAND = str(val)
+
+    # to print the direcction of the car
+    direction= ""
+    if SEND_COMMAND=='0':
+        direction  = "Stop"
+    if SEND_COMMAND =='1':
+        direction = "up"
+    if SEND_COMMAND =='2':
+        direction = "down"
+    if SEND_COMMAND =='3':
+        direction = "right"
+    if SEND_COMMAND =='4':
+        direction = "left"
+
+    print('Action ' + direction)
+    flag = 0
 
     
     print(SEND_COMMAND)
