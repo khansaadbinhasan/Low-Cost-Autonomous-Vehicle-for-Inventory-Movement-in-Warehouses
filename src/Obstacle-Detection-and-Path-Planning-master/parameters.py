@@ -1,4 +1,4 @@
-numCam = 0
+numCam = 1
 
 robotHSVlow = {'Hue': 88,
 			'Sat': 48,
