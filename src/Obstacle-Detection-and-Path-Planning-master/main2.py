@@ -15,12 +15,12 @@ from parameters import numCam, robotHSVlow, robotHSVhigh, grid_size, frame_heigh
  
 #tracker = cv2.TrackerBoosting_create()
 #tracker = cv2.TrackerMIL_create()
-#tracker = cv2.TrackerKCF_create()
+tracker = cv2.TrackerKCF_create()
 #tracker = cv2.TrackerTLD_create()
 #tracker = cv2.TrackerMedianFlow_create()
 #tracker = cv2.TrackerCSRT_create()
 
-tracker = cv2.TrackerMOSSE_create()
+# tracker = cv2.TrackerMOSSE_create()
 
 
 def drawBox(img,bbox):
@@ -144,10 +144,6 @@ pts = np.array(path , np.int32)
 
 index = 0 # index of the list qt
 
-# for choosing the source and destination on the given frame
-flag = 1
-
-
 success, frame = cap.read()
 frame = cv2.resize(frame,(frame_width, frame_height))
 bbox = cv2.selectROI("Tracking",frame, False)
@@ -158,7 +154,7 @@ tracker.init(frame, bbox)
 cX = 0
 cY = 0
 
-min_v = 9999999
+min_v = 500
 m_x, m_y = 0,0
 val = 0
 
@@ -177,17 +173,13 @@ while True:
     img = cv2.resize(img,(frame_width, frame_height))
     success, bbox = tracker.update(img)
  
-
-
     if success:
-        # print(success)
-        
         drawBox(img,bbox)
-        x = int((bbox[0] + bbox[2])/2)
-        y = int((bbox[1] + bbox[3])/2)
+        x = int(bbox[0] + (bbox[2]/2))
+        y = int(bbox[1] + (bbox[3]/2))
         cX = x
         cY = y
-        cv2.putText(img,str(x) + " " +str(y), (int(bbox[0]),int(bbox[1])), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        cv2.putText(img,str(x) + " " +str(y), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
     else:
         cv2.putText(img, "Lost", (100, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
@@ -223,7 +215,7 @@ while True:
         if distance(tempx, tempy ,xt, yt)<grid_size:
             print('next point')
             index+=1
-            min_v = 999999
+            min_v = 500
         tempx, tempy = qt[index]
         tempx = tempx*grid_size
         tempy = tempy*grid_size
@@ -242,22 +234,26 @@ while True:
         p3_x, p3_y = xt , yt +1
         p4_x, p4_y = xt , yt -1
 
+        dis1 = distance(p1_x, p1_y, tempx, tempy)
+        dis2 = distance(p2_x, p2_y, tempx, tempy)
+        dis3 = distance(p3_x, p3_y, tempx, tempy)
+        dis4 = distance(p4_x, p4_y, tempx, tempy)
 
-        if distance(p1_x, p1_y, tempx, tempy) < min_v:
-            min_v = distance(p1_x, p1_y, tempx, tempy)
+        if dis1 < min_v:
+            min_v = dis1
             m_x , m_y= p1_x, p1_y
             val = RIGHT
 
-        if distance(p2_x, p2_y, tempx, tempy) < min_v:
-            min_v = distance(p2_x, p2_y, tempx, tempy)
+        if dis2 < min_v:
+            min_v = dis2
             m_x, m_y= p2_x, p2_y
             val = LEFT
-        if distance(p3_x, p3_y, tempx, tempy) < min_v:
-            min_v = distance(p3_x, p3_y, tempx, tempy)
+        if dis3 < min_v:
+            min_v = dis3
             m_x,m_y = p3_x, p3_y
             val = DOWN
-        if distance(p4_x, p4_y, tempx, tempy) < min_v:
-            min_v = distance(p4_x, p4_y, tempx, tempy)
+        if dis4 < min_v:
+            min_v = dis4
             m_x, m_y = p4_x, p4_y
             val = UP
 
@@ -278,9 +274,7 @@ while True:
         direction = "left"
 
     print('Action ' + direction)
-    flag = 0
-
-    
+ 
     print(SEND_COMMAND)
     s.send(str(SEND_COMMAND).encode())
 
