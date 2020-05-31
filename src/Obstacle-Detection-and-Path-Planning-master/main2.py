@@ -39,7 +39,7 @@ RIGHT = '3'
 LEFT = '4'
 
 SEND_COMMAND = STOP
-
+LAST_COMMAND = SEND_COMMAND
 
 # # Setting up TCP connection
 TCP_IP = '192.168.43.208' # IP of raspberry pi
@@ -286,7 +286,10 @@ while True:
     print('Action ' + direction)
  
     print(SEND_COMMAND)
-    s.send(str(SEND_COMMAND).encode())
+    
+    if LAST_COMMAND != SEND_COMMAND:
+        s.send(str(SEND_COMMAND).encode())
+        LAST_COMMAND = SEND_COMMAND
 
     print(len(path))
 

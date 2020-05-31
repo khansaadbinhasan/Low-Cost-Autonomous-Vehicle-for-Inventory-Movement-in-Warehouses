@@ -69,7 +69,7 @@ void setup()
   pinMode(input21, OUTPUT);
   pinMode(input22, OUTPUT);
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
 }
 
@@ -79,8 +79,8 @@ void setup()
 void move_forward( int delayTime )
 {
   //assigning input directions to motor driver 1
-  stop(1000);
-  delay(500);
+//  stop(1000);
+//  delay(500);
   
   // motor 1
   digitalWrite(input11, LOW);
@@ -90,7 +90,9 @@ void move_forward( int delayTime )
   digitalWrite(input13, LOW);
   digitalWrite(input14, HIGH);
 
-  delay(500);
+//  delay(500);
+
+    Serial.print("forward");
 
   //assigning input directions to motor driver 2
   
@@ -102,6 +104,8 @@ void move_forward( int delayTime )
   digitalWrite(input21, LOW);
   digitalWrite(input22, HIGH);
 
+  Serial.print("dones");
+
   delay(delayTime);
 }
 
@@ -112,9 +116,9 @@ void move_backward(int delayTime)
 {
   // Executing this function resulted in shutting off of powerbank, most likely reason maybe since we were not only making high pins to low but also low to high
   // This may have resulted in a lot of usage of current, Hence, we first stop the robot so that current used is less. This seems to work for this particular case.
-  stop(1000);
-
-  delay(500);
+//  stop(1000);
+//
+//  delay(500);
 
   
   //assigning input directions to motor driver 1
@@ -128,7 +132,7 @@ void move_backward(int delayTime)
   digitalWrite(input14, LOW);
 
 
-  delay(500);
+//  delay(500);
 
   //assigning input directions to motor driver 2
   
