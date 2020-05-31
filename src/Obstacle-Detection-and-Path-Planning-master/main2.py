@@ -162,6 +162,7 @@ tempy = 0
 # destination of the path to reach 
 final_x, final_y = qt[-1]
 
+(winW, winH) = (grid_size, grid_size)
 
 
 while True:
@@ -185,6 +186,15 @@ while True:
     cv2.rectangle(img,(15,15),(200,90),(255,0,255),2)
     # cv2.putText(img, "Fps:", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,0,255), 2);
     # cv2.putText(img, "Status:", (20, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 255), 2);
+
+
+    # this code is used for making grids
+    for (x, y, window) in traversal.sliding_window(img, stepSize=grid_size, windowSize=(winW, winH)):
+        # if the window does not meet our desired window size, ignore it
+        if window.shape[0] != winH or window.shape[1] != winW:
+            continue
+        cv2.rectangle(img, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
+ 
  
  
     fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
