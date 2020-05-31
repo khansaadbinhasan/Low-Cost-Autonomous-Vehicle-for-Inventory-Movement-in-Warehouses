@@ -8,7 +8,8 @@ import time
 import socket
 
 
-from parameters import numCam, robotHSVlow, robotHSVhigh
+from parameters import numCam, robotHSVlow, robotHSVhigh, grid_size, frame_height, frame_width, decision 
+
 
 ############### Tracker Types #####################
  
@@ -27,7 +28,8 @@ def drawBox(img,bbox):
     cv2.rectangle(img, (x, y), ((x + w), (y + h)), (255, 0, 255), 3, 3 )
     cv2.putText(img, "Tracking", (100, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-
+def distance(x1,y1,x2,y2):
+    return np.sqrt((x2-x1)**2+(y2-y1)**2)
 
 
 STOP = '0'
@@ -48,10 +50,10 @@ s.connect((TCP_IP, TCP_PORT))
 
 
 # default size of the grid and the frame
-grid_size = 128
-frame_height= 640
-frame_width= 640
-decision = 0
+# grid_size = 128
+# frame_height= 640
+# frame_width= 640
+# decision = 0
 
 # print('enter the grid size')
 # grid_size = int(input())
@@ -286,6 +288,8 @@ while True:
     print(SEND_COMMAND)
     s.send(str(SEND_COMMAND).encode())
 
+    print(len(path))
+
     if len(path):
         for i in range(len(path)):
             source = (path[i][0], path[i][1])
@@ -310,7 +314,7 @@ while True:
     
     cv2.imshow('window', img)
 
-    time.sleep(0.05)
+    # time.sleep(0.05)
     k = cv2.waitKey(2) & 0xFF
     
     if k == 27:
@@ -318,6 +322,7 @@ while True:
 
 
 SEND_COMMAND = STOP
+print(str(SEND_COMMAND).encode())
 s.send(str(SEND_COMMAND).encode())
 s.close()
 cap.release()

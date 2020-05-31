@@ -309,8 +309,8 @@ void update_distances()
 void move_forward( int delayTime )
 {
   //assigning input directions to motor driver 1
-  stop(1000);
-  delay(500);
+//  stop(1000);
+//  delay(500);
   
   // motor 1
   digitalWrite(input_front1, LOW);
@@ -344,7 +344,7 @@ void move_backward(int delayTime)
   // This may have resulted in a lot of usage of current, Hence, we first stop the robot so that current used is less. This seems to work for this particular case.
   stop(1000);
 
-  delay(500);
+//  delay(500);
 
   
   //assigning input directions to motor driver 1
@@ -471,9 +471,14 @@ void receiveData(int byteCount)
 
   Serial.print("recieving commands");
 
+  servo_forward.write(midAng);
+  servo_backward.write(midAng);
+
   while (Wire.available()) 
   {
     wireIn = Wire.read();
+
+    
 
     if( wireIn == UP || wireIn == DOWN || wireIn == LEFT || wireIn == RIGHT || wireIn == STOP )
     {
