@@ -6,7 +6,7 @@ import imutils
 from collections import deque
 import time
 import socket
-
+import traversal
 
 from parameters import numCam, robotHSVlow, robotHSVhigh, grid_size, frame_height, frame_width, decision 
 
@@ -220,7 +220,7 @@ while True:
         break
 
 
-    if index!=len(qt):
+    if index < len(qt) - 1:
         # assume evchicle did not stop at any of the subgoal
         if distance(tempx, tempy ,xt, yt)<grid_size:
             print('next point')

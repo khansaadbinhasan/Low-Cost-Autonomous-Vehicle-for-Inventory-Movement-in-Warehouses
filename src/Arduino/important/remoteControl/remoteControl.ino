@@ -79,6 +79,8 @@ void setup()
 void move_forward( int delayTime )
 {
   //assigning input directions to motor driver 1
+  stop(1000);
+
   
   // motor 1
   digitalWrite(input11, HIGH);
