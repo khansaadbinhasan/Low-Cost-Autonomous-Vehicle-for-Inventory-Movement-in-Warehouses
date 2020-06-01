@@ -317,7 +317,7 @@ while True:
     
     cv2.imshow('window', img)
 
-    # time.sleep(0.05)
+    time.sleep(0.05)
     k = cv2.waitKey(2) & 0xFF
     
     if k == 27:
