@@ -12,4 +12,4 @@ robotHSVhigh = {'Hue': 161,
 grid_size = 32
 frame_height= 640
 frame_width= 640
-decision = 0
+decision = 1

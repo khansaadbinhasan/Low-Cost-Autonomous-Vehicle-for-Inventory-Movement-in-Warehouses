@@ -13,8 +13,8 @@ int i = 0;
 int j = 0;
 
 void setup() {
-  myservo1.attach(5,600,2300);  // (pin, min, max)
-  myservo2.attach(6,600,2300);  // (pin, min, max)
+  myservo1.attach(5,0,180);  // (pin, min, max)
+  myservo2.attach(6,0,180);  // (pin, min, max)
 }
 void loop() {
 
