@@ -97,7 +97,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		if decision == 1:
 			flag = 0
 			for i in palette:
-				if (all(j<=40 for j in i)):
+				if (all(j<=30 for j in i)):
 					# print(i)
 					if (flag==0):
 						maze[index[1]-1][index[0]-1] = 1		
