@@ -1,10 +1,6 @@
 import cv2
 import numpy as np
 import time
-from sklearn.cluster import KMeans
-from skimage import io
-import matplotlib.pyplot as plt
-
 import astarsearch
 
 
@@ -17,7 +13,7 @@ def sliding_window(image, stepSize, windowSize):
 			yield (x, y, image[y:y + windowSize[1], x:x + windowSize[0]])
 
 
-def main(source , dest, cap, grid_size,frame_width, frame_height):
+def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 
 	occupied_grids = []		# List to store coordinates of occupied grid 
 	planned_path = {}		# Dictionary to store information regarding path planning  	
@@ -25,6 +21,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height):
 	_,image = cap.read()
 
 	image = cv2.resize(image , (frame_width, frame_height))
+	# load the image and define the window width and height
 	(winW, winH) = (grid_size, grid_size)		# Size of individual cropped images 
 
 	obstacles = []			# List to store obstacles (black tiles)  
@@ -47,7 +44,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height):
 
 		img = window
 
-		cv2.imshow("second_window",img)
+		# cv2.imshow("second_window",img)
 	
 
 		# dominant color concept to find the dominant color in each windoew
@@ -62,22 +59,25 @@ def main(source , dest, cap, grid_size,frame_width, frame_height):
 		_, counts = np.unique(labels, return_counts=True)
 		dominant = palette[np.argmax(counts)]
 
-		# this is used for is there any black in the window 
-		flag = 0
-		for i in  palette:
-			if (all(j<=40 for j in i)):
-				# print(i)
-				if (flag==0):
-					maze[index[1]-1][index[0]-1] = 1		
-					cv2.rectangle(image, (x, y),(x + winW, y + winH), (255, 0, 0),-1)		
-					occupied_grids.append(tuple(index))	
-					flag = 1
-		
-		cv2.putText(clone,str(maze[index[1]-1][index[0]-1]),(x, y),
-			cv2.FONT_HERSHEY_SIMPLEX ,1
-			,(255,0,0),2, cv2.LINE_AA)
 
-		cv2.imshow("display_Window", clone)
+		# this is used for is there any black in the window 
+		print('decision' + str(decision))
+		if decision == 1:
+			flag = 0
+			for i in palette:
+				if (all(j<=40 for j in i)):
+					# print(i)
+					if (flag==0):
+						maze[index[1]-1][index[0]-1] = 1		
+						cv2.rectangle(image, (x, y),(x + winW, y + winH), (0, 0, 0),-1)		
+						occupied_grids.append(tuple(index))	
+						flag = 1
+			
+			cv2.putText(clone,str(maze[index[1]-1][index[0]-1]),(x, y),
+				cv2.FONT_HERSHEY_SIMPLEX ,1
+				,(255,0,0),2, cv2.LINE_AA)
+
+		cv2.imshow("window", clone)
 		cv2.waitKey(1)
 		time.sleep(0.01)
 	
@@ -92,7 +92,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height):
 	result = astarsearch.astar(res,(source[0],source[1]),(dest[0],dest[1]), frame_width//grid_size, frame_height//grid_size)
 	
 	list2=[]
-	# print(result)
+
 	for t in result:
 		x,y = t[0],t[1]
 		list2.append(tuple((x+1,y+1)))			#Contains min path + startimage + endimage

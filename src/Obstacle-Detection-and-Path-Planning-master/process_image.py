@@ -97,11 +97,16 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		if decision == 1:
 			flag = 0
 			for i in palette:
+<<<<<<< HEAD
 				if (all(j<=30 for j in i)):
+=======
+				if (all(j<=20 for j in i)):
+>>>>>>> 62e6c82f809e06d16e6d99b45edf36e70a090d7c
 					# print(i)
 					if (flag==0):
 						maze[index[1]-1][index[0]-1] = 1		
-						cv2.rectangle(image, (x, y),(x + winW, y + winH), (0, 0, 0),-1)		
+						cv2.rectangle(image, (x, y),(x + winW, y + winH), (0, 255, 0),2)		
+						# cv2.rectangle(clone, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
 						occupied_grids.append(tuple(index))	
 						flag = 1
 			
@@ -113,7 +118,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		# cv2.imshow("bar", bar)
 		cv2.imshow("display_Window", clone)
 		cv2.waitKey(1)
-		time.sleep(0.01)
+		# time.sleep(0.01)
 	
 		#Iterate
 		index[1] = index[1] + 1							

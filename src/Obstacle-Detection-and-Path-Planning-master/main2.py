@@ -6,7 +6,7 @@ import imutils
 from collections import deque
 import time
 import socket
-
+import traversal
 
 from parameters import numCam, robotHSVlow, robotHSVhigh, grid_size, frame_height, frame_width, decision 
 
@@ -39,7 +39,7 @@ RIGHT = '3'
 LEFT = '4'
 
 SEND_COMMAND = STOP
-
+LAST_COMMAND = SEND_COMMAND
 
 # # Setting up TCP connection
 TCP_IP = '192.168.43.208' # IP of raspberry pi
@@ -220,7 +220,7 @@ while True:
         break
 
 
-    if index!=len(qt):
+    if index < len(qt) - 1:
         # assume evchicle did not stop at any of the subgoal
         if distance(tempx, tempy ,xt, yt)<grid_size:
             print('next point')
@@ -286,7 +286,10 @@ while True:
     print('Action ' + direction)
  
     print(SEND_COMMAND)
-    s.send(str(SEND_COMMAND).encode())
+    
+    if LAST_COMMAND != SEND_COMMAND:
+        s.send(str(SEND_COMMAND).encode())
+        LAST_COMMAND = SEND_COMMAND
 
     print(len(path))
 
@@ -314,7 +317,7 @@ while True:
     
     cv2.imshow('window', img)
 
-    # time.sleep(0.05)
+    time.sleep(0.05)
     k = cv2.waitKey(2) & 0xFF
     
     if k == 27:
