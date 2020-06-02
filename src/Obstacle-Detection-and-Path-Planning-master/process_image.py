@@ -29,6 +29,12 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 	list_images = [[blank_image for i in range(frame_height//grid_size)] for i in range(frame_width//grid_size)] 	#array of list of images 
 	maze = [[0 for i in range(frame_height//grid_size)] for i in range(frame_width//grid_size)] 			#matrix to represent the grids of individual cropped images
 
+	kernel_open  = np.ones((2,2))
+	kernel_close = np.ones((5,5))
+	
+	yellow_lower = np.array([20, 100, 100])
+	yellow_upper = np.array([30, 255, 255])
+
 	for (x, y, window) in traversal.sliding_window(image, stepSize=grid_size, windowSize=(winW, winH)):
 		# if the window does not meet our desired window size, ignore it
 		if window.shape[0] != winH or window.shape[1] != winW:
@@ -43,66 +49,55 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		
 
 		img = window
-
-		cv2.imshow("second_window",img)
+		
+		ctl = img
 	
 
-		# dominant color concept to find the dominant color in each windoew
-		pixels = np.float32(img.reshape(-1, 3))
+		hsv = cv2.cvtColor(ctl, cv2.COLOR_BGR2HSV)
 
-		# nuber of dominant color to find inside the window
-		n_colors = 3
-		criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, .1)
+		mask0 = cv2.inRange(hsv, yellow_lower, yellow_upper)
+
+		mask = mask0
+
+		mask_op = cv2.morphologyEx(mask , cv2.MORPH_OPEN, kernel_open)
+
+		mask_cl = cv2.morphologyEx(mask_op, cv2.MORPH_CLOSE, kernel_close)
+
+		Z = mask_cl.reshape((-1,1))
+
+		Z = np.float32(Z)
+
+		n_colors = 2
+
+		criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1)
+
 		flags = cv2.KMEANS_RANDOM_CENTERS
 
-		_, labels, palette = cv2.kmeans(pixels, n_colors, None, criteria, 10, flags)
+		_, labels, palette = cv2.kmeans(Z, n_colors, None, criteria, 10, flags)
+
 		_, counts = np.unique(labels, return_counts=True)
+
 		dominant = palette[np.argmax(counts)]
-		# print('palette', palette)
-		# print(dominant)
+
+		center = np.uint8(palette)
+
+		res = center[labels.flatten()]
+
+		res2 = res.reshape((mask_cl.shape))
+
+		cv2.imshow('res2',res2)
 
 
-		# this is used to print the dominant color inside the window
-		# indices = np.argsort(counts)[::-1]   
-		# freqs = np.cumsum(np.hstack([[0], counts[indices]/counts.sum()]))
-		# rows = np.int_(img.shape[0]*freqs)
-		# dom_patch = np.zeros(shape=img.shape, dtype=np.uint8)
-		# for i in range(len(rows) - 1):
-		# 	dom_patch[rows[i]:rows[i + 1], :, :] += np.uint8(palette[indices[i]])
-
-		# cv2.namedWindow('dominant',cv2.WINDOW_NORMAL)
-		# cv2.resizeWindow('dominant', 600,600)
-		# cv2.imshow("dominant", dom_patch)
-		
-		# plt.show()	
-
-		# average color concept to find the average color in each window
-		# average_color_per_row = np.average(img, axis=0)
-		# average_color = np.average(average_color_per_row, axis=0)
-		# average_color = np.uint8(average_color)					#Average color of the grids
-		
-		# print(average_color)
-		
-		#to identify which color we need to find 
-		# print(average_color)
-
-		#this is used for is there is black color in domianace
-
-		# if (all(i<=50 for i in dominant)):			
-		# 	maze[index[1]-1][index[0]-1] = 1				
-		# 	occupied_grids.append(tuple(index))	
-
-		# this is used for is there any black in the window 
 		print('decision' + str(decision))
-		if decision == 1:
+		if decision==1:
 			flag = 0
+			# print(palette)
 			for i in palette:
-				if (all(j<=30 for j in i)):
+				if i[0]>=250:
 					# print(i)
 					if (flag==0):
 						maze[index[1]-1][index[0]-1] = 1		
-						cv2.rectangle(image, (x, y),(x + winW, y + winH), (0, 255, 0),2)		
-						# cv2.rectangle(clone, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
+						cv2.rectangle(image, (x, y),(x + winW, y + winH), (255, 0, 0),-1)		
 						occupied_grids.append(tuple(index))	
 						flag = 1
 			
