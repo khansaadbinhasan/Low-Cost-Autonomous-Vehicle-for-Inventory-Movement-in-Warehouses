@@ -32,7 +32,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 	kernel_open  = np.ones((2,2))
 	kernel_close = np.ones((5,5))
 	
-	yellow_lower = np.array([20, 100, 100])
+	yellow_lower = np.array([20, 45, 27])
 	yellow_upper = np.array([30, 255, 255])
 
 	for (x, y, window) in traversal.sliding_window(image, stepSize=grid_size, windowSize=(winW, winH)):
