@@ -49,6 +49,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((TCP_IP, TCP_PORT))
 
 
+
 # default size of the grid and the frame
 # grid_size = 128
 # frame_height= 640
@@ -82,6 +83,8 @@ cv2.namedWindow('window1')
 cv2.setMouseCallback('window1' , draw_circle)
 
 # function to draw the source and destination
+
+# start = time.time()
 
 while True:
 
@@ -261,7 +264,8 @@ while True:
         if dis3 < min_v:
             min_v = dis3
             m_x,m_y = p3_x, p3_y
-            val = DOWN
+            # val = DOWN
+            val = UP
         if dis4 < min_v:
             min_v = dis4
             m_x, m_y = p4_x, p4_y
@@ -286,8 +290,13 @@ while True:
     print('Action ' + direction)
  
     print(SEND_COMMAND)
+
     
-    if LAST_COMMAND != SEND_COMMAND:
+    # end = time.time()
+
+    # timeElapsed = int(end - start)
+    
+    if LAST_COMMAND != SEND_COMMAND:# or timeElapsed % 3 == 0 :
         s.send(str(SEND_COMMAND).encode())
         LAST_COMMAND = SEND_COMMAND
 

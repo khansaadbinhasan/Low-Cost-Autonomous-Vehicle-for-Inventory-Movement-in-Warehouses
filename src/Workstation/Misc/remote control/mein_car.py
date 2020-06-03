@@ -26,6 +26,7 @@ RIGHT = '3'
 LEFT = '4'
 
 SEND_COMMAND = STOP
+LAST_COMMAND = SEND_COMMAND
 
 
 # Setting up TCP connection
@@ -79,6 +80,8 @@ while not done:
                 else:
                         SEND_COMMAND = STOP
 
+
+                        
                 print(SEND_COMMAND)
                 s.send(bytes(SEND_COMMAND,encoding="UTF-8"))
 

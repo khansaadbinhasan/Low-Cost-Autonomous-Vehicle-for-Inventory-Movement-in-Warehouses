@@ -97,19 +97,14 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		if decision == 1:
 			flag = 0
 			for i in palette:
-<<<<<<< HEAD
 				if (all(j<=30 for j in i)):
-=======
-				if (all(j<=20 for j in i)):
->>>>>>> 62e6c82f809e06d16e6d99b45edf36e70a090d7c
 					# print(i)
 					if (flag==0):
 						maze[index[1]-1][index[0]-1] = 1		
-						cv2.rectangle(image, (x, y),(x + winW, y + winH), (0, 255, 0),2)		
-						# cv2.rectangle(clone, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
+						cv2.rectangle(image, (x, y),(x + winW, y + winH), (0, 255, 0),-1)		
 						occupied_grids.append(tuple(index))	
 						flag = 1
-			
+				
 			cv2.putText(clone,str(maze[index[1]-1][index[0]-1]),(x, y),
 				cv2.FONT_HERSHEY_SIMPLEX ,1
 				,(255,0,0),2, cv2.LINE_AA)

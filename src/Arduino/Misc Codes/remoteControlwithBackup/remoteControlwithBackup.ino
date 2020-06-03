@@ -490,6 +490,9 @@ void receiveData(int byteCount)
       Serial.println(cmd);
 
 
+      Serial.print("letrun: ");
+      Serial.println(letRun);
+
       if( letRun )
       {
 
@@ -546,7 +549,7 @@ void check_obstacle_take_action()
       backup_algo();
     }
 
-    else if( cmd == RIGHT || cmd == LEFT )
+    else if( cmd == RIGHT || cmd == LEFT && distance_forward != -1 )
       letRun = 1;
 
   }
@@ -562,255 +565,502 @@ void check_obstacle_take_action()
       backup_algo();
     }
 
-    else
+    else if(distance_backward != -1)
       letRun = 1;
   }
 
-  if( distance_forward > safetyDist && distance_backward > safetyDist )
+  if( distance_forward > safetyDist || distance_backward > safetyDist )
     letRun = 1;
 
 }
 
+// void backup_algo()
+// {
+//   if( distance_forward < safetyDist )
+//   {
+//     int spaceFound = 0;
+//     servoang_front = midAng;
+
+//     while( !spaceFound )
+//     {
+//       servo_forward.write(servoang_front);
+//       update_distances();
+//       delay(10);      
+
+//       if(distance_forward > safetyDist)
+//         spaceFound = 1;
+
+//       if(servoang_front != maxAng)
+//         servoang_front++;
+
+//       else
+//       {
+//         Serial.println("No path found on the right.");
+//         break;
+//       }
+
+//     }
+
+//     if( spaceFound )
+//     {
+//       servo_forward.write(midAng);
+//       update_distances();
+
+//       while( distance_forward < safetyDist )
+//       {
+//         move_right(100);
+//         update_distances();
+//       }
+
+      
+//       robotSafe = 0;
+
+//       while(!robotSafe)      
+//       {
+//         move_forward(1000);
+//         update_distances();
+
+//         if( distance_forward > safetyDist && distance_backward > safetyDist )
+//         {
+//           Serial.println("Robot now safe backup algo aborting....");
+//           stop(1);
+//           servo_forward.write(midAng);
+//           servo_backward.write(midAng);
+//           update_distances();
+//           robotSafe = 1;
+//           return;
+//         }
+//       }
+//     }
+
+//     if( !spaceFound )
+//       Serial.println("Looking for Path on Left");
+
+//     servoang_front = midAng;
+
+//     while( !spaceFound )
+//     {
+//       servo_forward.write(servoang_front);
+//       update_distances();
+//       delay(10);      
+
+//       if(distance_forward > safetyDist)
+//         spaceFound = 1;
+
+//       if(servoang_front != minAng)
+//         servoang_front--;
+
+//       else
+//       {
+//         Serial.println("No path found on the left.");
+//         break;
+//       }
+
+//     }
+
+//     if( spaceFound )
+//     {
+//       servo_forward.write(midAng);
+//       update_distances();
+
+//       while( distance_forward < safetyDist )
+//       {
+//         move_left(100);
+//         update_distances();
+//       }
+
+//       robotSafe = 0;
+
+//       while(!robotSafe)      
+//       {
+//         move_forward(1000);
+//         update_distances();
+
+//         if( distance_forward > safetyDist && distance_backward > safetyDist )
+//         {
+//           Serial.println("Robot now safe backup algo aborting....");
+//           robotSafe = 1;
+//           stop(1);
+//           servo_forward.write(midAng);
+//           servo_backward.write(midAng);
+//           update_distances();
+//           return;
+//         }
+//       }
+//     }
+
+//   }
+
+
+//   if( distance_backward < safetyDist )
+//   {
+//     int spaceFound = 0;
+//     servoang_back = midAng;
+
+//     while( !spaceFound )
+//     {
+//       servo_backward.write(servoang_back);
+//       update_distances();
+//       delay(10);      
+
+//       if(distance_backward > safetyDist)
+//         spaceFound = 1;
+
+//       if(servoang_back != maxAng)
+//         servoang_back++;
+
+//       else
+//       {
+//         Serial.println("No path found on the right.");
+//         break;
+//       }
+
+//     }
+
+//     if( spaceFound )
+//     {
+//       servo_backward.write(midAng);
+//       update_distances();
+
+//       while( distance_backward < safetyDist )
+//       {
+//         move_left(100);
+//         update_distances();
+//       }
+
+      
+//       robotSafe = 0;
+
+//       while(!robotSafe)      
+//       {
+//         move_backward(1000);
+//         update_distances();
+
+//         if( distance_forward > safetyDist && distance_backward > safetyDist )
+//         {
+//           Serial.println("Robot now safe backup algo aborting....");
+//           stop(1);
+//           servo_forward.write(midAng);
+//           servo_backward.write(midAng);
+//           update_distances();
+
+//           robotSafe = 1;
+//           return;
+//         }
+//       }
+//     }
+
+//     if( !spaceFound )
+//       Serial.println("Looking for Path on Left");
+
+
+//     spaceFound = 0;
+//     servoang_back = midAng;
+
+//     while( !spaceFound )
+//     {
+//       servo_backward.write(servoang_back);
+//       update_distances();
+//       delay(10);      
+
+//       if(distance_backward > safetyDist)
+//         spaceFound = 1;
+
+//       if(servoang_back != minAng)
+//         servoang_back--;
+
+//       else
+//       {
+//         Serial.println("No path found on the left.");
+//         break;
+//       }
+
+//     }
+
+//     if( spaceFound )
+//     {
+//       servo_backward.write(midAng);
+//       update_distances();
+
+//       while( distance_backward < safetyDist )
+//       {
+//         move_right(100);
+//         update_distances();
+//       }
+
+      
+//       robotSafe = 0;
+
+//       while(!robotSafe)      
+//       {
+//         move_backward(1000);
+//         update_distances();
+
+//         if( distance_forward > safetyDist && distance_backward > safetyDist )
+//         {
+//           Serial.println("Robot now safe backup algo aborting....");
+//           stop(1);
+//           servo_forward.write(midAng);
+//           servo_backward.write(midAng);
+//           update_distances();
+//           robotSafe = 1;
+//           return;
+//         }
+//       }
+//     }
+
+//     if( !spaceFound )
+//       Serial.println("No path found");
+
+//   }
+// }
+
 void backup_algo()
 {
+ 
   if( distance_forward < safetyDist )
   {
-    int spaceFound = 0;
-    servoang_front = midAng;
 
-    while( !spaceFound )
-    {
-      servo_forward.write(servoang_front);
-      update_distances();
-      delay(10);      
+    stop(1000);
+    // letRun = 0;
 
-      if(distance_forward > safetyDist)
-        spaceFound = 1;
+    // int spaceFound = 0;
+    // servoang_front = midAng;
 
-      if(servoang_front != maxAng)
-        servoang_front++;
+    // while( !spaceFound )
+    // {
+    //   servo_forward.write(servoang_front);
+    //   update_distances();
+    //   delay(10);      
 
-      else
-      {
-        Serial.println("No path found on the right.");
-        break;
-      }
+    //   if(distance_forward > safetyDist)
+    //     spaceFound = 1;
 
-    }
+    //   if(servoang_front != maxAng)
+    //     servoang_front++;
 
-    if( spaceFound )
-    {
-      servo_forward.write(midAng);
-      update_distances();
+    //   else
+    //   {
+    //     Serial.println("No path found on the right.");
+    //     break;
+    //   }
 
-      while( distance_forward < safetyDist )
-      {
-        move_right(100);
-        update_distances();
-      }
+    // }
 
-      
-      robotSafe = 0;
+    // if( spaceFound )
+    // {
+    //   servo_forward.write(midAng);
+    //   update_distances();
 
-      while(!robotSafe)      
-      {
-        move_forward(1000);
-        update_distances();
-
-        if( distance_forward > safetyDist && distance_backward > safetyDist )
-        {
-          Serial.println("Robot now safe backup algo aborting....");
-          stop(1);
-          servo_forward.write(midAng);
-          servo_backward.write(midAng);
-          update_distances();
-          robotSafe = 1;
-          return;
-        }
-      }
-    }
-
-    if( !spaceFound )
-      Serial.println("Looking for Path on Left");
-
-    servoang_front = midAng;
-
-    while( !spaceFound )
-    {
-      servo_forward.write(servoang_front);
-      update_distances();
-      delay(10);      
-
-      if(distance_forward > safetyDist)
-        spaceFound = 1;
-
-      if(servoang_front != minAng)
-        servoang_front--;
-
-      else
-      {
-        Serial.println("No path found on the left.");
-        break;
-      }
-
-    }
-
-    if( spaceFound )
-    {
-      servo_forward.write(midAng);
-      update_distances();
-
-      while( distance_forward < safetyDist )
-      {
-        move_left(100);
-        update_distances();
-      }
-
-      robotSafe = 0;
-
-      while(!robotSafe)      
-      {
-        move_forward(1000);
-        update_distances();
-
-        if( distance_forward > safetyDist && distance_backward > safetyDist )
-        {
-          Serial.println("Robot now safe backup algo aborting....");
-          robotSafe = 1;
-          stop(1);
-          servo_forward.write(midAng);
-          servo_backward.write(midAng);
-          update_distances();
-          return;
-        }
-      }
-    }
-
-  }
-
-
-  if( distance_backward < safetyDist )
-  {
-    int spaceFound = 0;
-    servoang_back = midAng;
-
-    while( !spaceFound )
-    {
-      servo_backward.write(servoang_back);
-      update_distances();
-      delay(10);      
-
-      if(distance_backward > safetyDist)
-        spaceFound = 1;
-
-      if(servoang_back != maxAng)
-        servoang_back++;
-
-      else
-      {
-        Serial.println("No path found on the right.");
-        break;
-      }
-
-    }
-
-    if( spaceFound )
-    {
-      servo_backward.write(midAng);
-      update_distances();
-
-      while( distance_backward < safetyDist )
-      {
-        move_left(100);
-        update_distances();
-      }
+    //   while( distance_forward < safetyDist )
+    //   {
+    //     move_right(100);
+    //     update_distances();
+    //   }
 
       
-      robotSafe = 0;
+    //   robotSafe = 0;
 
-      while(!robotSafe)      
-      {
-        move_backward(1000);
-        update_distances();
+    //   while(!robotSafe)      
+    //   {
+    //     move_forward(1000);
+    //     update_distances();
 
-        if( distance_forward > safetyDist && distance_backward > safetyDist )
-        {
-          Serial.println("Robot now safe backup algo aborting....");
-          stop(1);
-          servo_forward.write(midAng);
-          servo_backward.write(midAng);
-          update_distances();
+    //     if( distance_forward > safetyDist && distance_backward > safetyDist )
+    //     {
+    //       Serial.println("Robot now safe backup algo aborting....");
+    //       stop(1);
+    //       servo_forward.write(midAng);
+    //       servo_backward.write(midAng);
+    //       update_distances();
+    //       robotSafe = 1;
+    //       return;
+    //     }
+    //   }
+    // }
 
-          robotSafe = 1;
-          return;
-        }
-      }
-    }
+  //   if( !spaceFound )
+  //     Serial.println("Looking for Path on Left");
 
-    if( !spaceFound )
-      Serial.println("Looking for Path on Left");
+  //   servoang_front = midAng;
+
+  //   while( !spaceFound )
+  //   {
+  //     servo_forward.write(servoang_front);
+  //     update_distances();
+  //     delay(10);      
+
+  //     if(distance_forward > safetyDist)
+  //       spaceFound = 1;
+
+  //     if(servoang_front != minAng)
+  //       servoang_front--;
+
+  //     else
+  //     {
+  //       Serial.println("No path found on the left.");
+  //       break;
+  //     }
+
+  //   }
+
+  //   if( spaceFound )
+  //   {
+  //     servo_forward.write(midAng);
+  //     update_distances();
+
+  //     while( distance_forward < safetyDist )
+  //     {
+  //       move_left(100);
+  //       update_distances();
+  //     }
+
+  //     robotSafe = 0;
+
+  //     while(!robotSafe)      
+  //     {
+  //       move_forward(1000);
+  //       update_distances();
+
+  //       if( distance_forward > safetyDist && distance_backward > safetyDist )
+  //       {
+  //         Serial.println("Robot now safe backup algo aborting....");
+  //         robotSafe = 1;
+  //         stop(1);
+  //         servo_forward.write(midAng);
+  //         servo_backward.write(midAng);
+  //         update_distances();
+  //         return;
+  //       }
+  //     }
+  //   }
+
+  // }
 
 
-    spaceFound = 0;
-    servoang_back = midAng;
+  // if( distance_backward < safetyDist )
+  // {
+  //   int spaceFound = 0;
+  //   servoang_back = midAng;
 
-    while( !spaceFound )
-    {
-      servo_backward.write(servoang_back);
-      update_distances();
-      delay(10);      
+  //   while( !spaceFound )
+  //   {
+  //     servo_backward.write(servoang_back);
+  //     update_distances();
+  //     delay(10);      
 
-      if(distance_backward > safetyDist)
-        spaceFound = 1;
+  //     if(distance_backward > safetyDist)
+  //       spaceFound = 1;
 
-      if(servoang_back != minAng)
-        servoang_back--;
+  //     if(servoang_back != maxAng)
+  //       servoang_back++;
 
-      else
-      {
-        Serial.println("No path found on the left.");
-        break;
-      }
+  //     else
+  //     {
+  //       Serial.println("No path found on the right.");
+  //       break;
+  //     }
 
-    }
+  //   }
 
-    if( spaceFound )
-    {
-      servo_backward.write(midAng);
-      update_distances();
+  //   if( spaceFound )
+  //   {
+  //     servo_backward.write(midAng);
+  //     update_distances();
 
-      while( distance_backward < safetyDist )
-      {
-        move_right(100);
-        update_distances();
-      }
+  //     while( distance_backward < safetyDist )
+  //     {
+  //       move_left(100);
+  //       update_distances();
+  //     }
 
       
-      robotSafe = 0;
+  //     robotSafe = 0;
 
-      while(!robotSafe)      
-      {
-        move_backward(1000);
-        update_distances();
+  //     while(!robotSafe)      
+  //     {
+  //       move_backward(1000);
+  //       update_distances();
 
-        if( distance_forward > safetyDist && distance_backward > safetyDist )
-        {
-          Serial.println("Robot now safe backup algo aborting....");
-          stop(1);
-          servo_forward.write(midAng);
-          servo_backward.write(midAng);
-          update_distances();
-          robotSafe = 1;
-          return;
-        }
-      }
-    }
+  //       if( distance_forward > safetyDist && distance_backward > safetyDist )
+  //       {
+  //         Serial.println("Robot now safe backup algo aborting....");
+  //         stop(1);
+  //         servo_forward.write(midAng);
+  //         servo_backward.write(midAng);
+  //         update_distances();
 
-    if( !spaceFound )
-      Serial.println("No path found");
+  //         robotSafe = 1;
+  //         return;
+  //       }
+  //     }
+  //   }
+
+  //   if( !spaceFound )
+  //     Serial.println("Looking for Path on Left");
+
+
+  //   spaceFound = 0;
+  //   servoang_back = midAng;
+
+  //   while( !spaceFound )
+  //   {
+  //     servo_backward.write(servoang_back);
+  //     update_distances();
+  //     delay(10);      
+
+  //     if(distance_backward > safetyDist)
+  //       spaceFound = 1;
+
+  //     if(servoang_back != minAng)
+  //       servoang_back--;
+
+  //     else
+  //     {
+  //       Serial.println("No path found on the left.");
+  //       break;
+  //     }
+
+  //   }
+
+  //   if( spaceFound )
+  //   {
+  //     servo_backward.write(midAng);
+  //     update_distances();
+
+  //     while( distance_backward < safetyDist )
+  //     {
+  //       move_right(100);
+  //       update_distances();
+  //     }
+
+      
+  //     robotSafe = 0;
+
+  //     while(!robotSafe)      
+  //     {
+  //       move_backward(1000);
+  //       update_distances();
+
+  //       if( distance_forward > safetyDist && distance_backward > safetyDist )
+  //       {
+  //         Serial.println("Robot now safe backup algo aborting....");
+  //         stop(1);
+  //         servo_forward.write(midAng);
+  //         servo_backward.write(midAng);
+  //         update_distances();
+  //         robotSafe = 1;
+  //         return;
+  //       }
+  //     }
+  //   }
+
+  //   if( !spaceFound )
+  //     Serial.println("No path found");
 
   }
 }
+
 
 void loop() 
 {
