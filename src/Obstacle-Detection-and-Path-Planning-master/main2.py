@@ -334,7 +334,7 @@ while True:
 
 
 SEND_COMMAND = STOP
-print(str(SEND_COMMAND).encode())
+# print(str(SEND_COMMAND).encode())
 s.send(str(SEND_COMMAND).encode())
 s.close()
 cap.release()
