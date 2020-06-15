@@ -2,25 +2,28 @@ import cv2
 import numpy as np
 import time
 import astarsearch
-import traversal
-from sklearn.cluster import KMeans
-from skimage import io
-import matplotlib.pyplot as plt
+
+
+
+#Traversing through the image to perform image processing
+def sliding_window(image, stepSize, windowSize):
+	# slide a window across the image
+	for y in range(0, image.shape[0], stepSize):
+		for x in range(0, image.shape[1], stepSize):
+			# yield the current window
+			yield (x, y, image[y:y + windowSize[1], x:x + windowSize[0]])
+
 
 def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 
 	occupied_grids = []		# List to store coordinates of occupied grid 
 	planned_path = {}		# Dictionary to store information regarding path planning  	
-	# print('aewfoineoif')
-	# cap = cv2.VideoCapture(0)
 
-	# image = cv2.imread(im)
 
 	_,image = cap.read()
 
 	image = cv2.resize(image , (frame_width, frame_height))
 	# load the image and define the window width and height
-	# image = cv2.imread(frame)
 	(winW, winH) = (grid_size, grid_size)		# Size of individual cropped images 
 
 	obstacles = []			# List to store obstacles (black tiles)  
@@ -35,12 +38,11 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 	yellow_lower = np.array([20, 45, 27])
 	yellow_upper = np.array([30, 255, 255])
 
-	for (x, y, window) in traversal.sliding_window(image, stepSize=grid_size, windowSize=(winW, winH)):
+	for (x, y, window) in sliding_window(image, stepSize=grid_size, windowSize=(winW, winH)):
 		# if the window does not meet our desired window size, ignore it
 		if window.shape[0] != winH or window.shape[1] != winW:
 			continue
 
-	#	print index
 		clone = image.copy()
 		cv2.rectangle(clone, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
 		crop_img = image[x:x + winW, y:y + winH] 				#crop the image
@@ -85,7 +87,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 
 		res2 = res.reshape((mask_cl.shape))
 
-		cv2.imshow('res2',res2)
+		# cv2.imshow('res2',res2)
 
 
 		print('decision' + str(decision))
@@ -105,11 +107,8 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 				cv2.FONT_HERSHEY_SIMPLEX ,1
 				,(255,0,0),2, cv2.LINE_AA)
 
-		# cv2.imshow("hist", hist)
-		# cv2.imshow("bar", bar)
-		cv2.imshow("display_Window", clone)
+		cv2.imshow("window", clone)
 		cv2.waitKey(1)
-		# time.sleep(0.01)
 	
 		#Iterate
 		index[1] = index[1] + 1							
@@ -121,23 +120,15 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 	res = [[maze[j][i] for j in range(len(maze))] for i in range(len(maze[0]))]
 	result = astarsearch.astar(res,(source[0],source[1]),(dest[0],dest[1]), frame_width//grid_size, frame_height//grid_size)
 	
-	# printing the maze for checking
-	# for i in range(len(maze)):
-	# 	for j in range(len(maze[0])):
-	# 		print(res[i][j],end=" ")
-	# 	print(" ")	
-	
 	list2=[]
-	# print(result)
+
 	for t in result:
 		x,y = t[0],t[1]
 		list2.append(tuple((x+1,y+1)))			#Contains min path + startimage + endimage
 	result = list(list2[1:-1]) 			#Result contains the minimum path required 
 
-	# print(maze)
-	# cv2.destroyAllWindows()
-	# cap.release()
 	key = cv2.waitKey(1)
+
 	if key==27:
 		cv2.destroyAllWindows()
 		cap.release()

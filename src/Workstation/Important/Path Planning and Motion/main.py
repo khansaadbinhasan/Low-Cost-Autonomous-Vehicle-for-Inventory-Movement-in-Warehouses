@@ -1,6 +1,5 @@
 import process_image
 import cv2
-# import smooth
 import numpy as np
 import imutils
 from collections import deque
@@ -11,6 +10,7 @@ import socket
 from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision, TCP_IP, TCP_PORT
 
 
+
 ############### Tracker Types #####################
  
 #tracker = cv2.TrackerBoosting_create()
@@ -19,10 +19,10 @@ tracker = cv2.TrackerKCF_create()
 #tracker = cv2.TrackerTLD_create()
 #tracker = cv2.TrackerMedianFlow_create()
 #tracker = cv2.TrackerCSRT_create()
+
 # tracker = cv2.TrackerMOSSE_create()
 
 position = []
-
 
 
 def drawBox(img,bbox):
@@ -38,37 +38,35 @@ def draw_circle(event , x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDBLCLK:
         position.append((x, y))
 
+
 def main():
     SEND_COMMAND = STOP
     LAST_COMMAND = SEND_COMMAND
 
-
-    # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # s.connect((TCP_IP, TCP_PORT))
-
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((TCP_IP, TCP_PORT))
 
 
     # deque for movement detection
     pt = deque(maxlen=10)
     cap = cv2.VideoCapture(numCam)
 
-
-
     cv2.namedWindow('window')
     cv2.setMouseCallback('window' , draw_circle)
 
     # function to draw the source and destination
+
     while True:
 
-        _, frame = cap.read()
+        _, frame1 = cap.read()
 
-        frame = cv2.resize(frame,(frame_width, frame_height))
+        frame1 = cv2.resize(frame1,(frame_width, frame_height))
         if len(position):
             for i in range(len(position)):
                 source = (position[i][0], position[i][1])
-                cv2.circle(frame,source, 10, (255, 0, 0), -1)
+                cv2.circle(frame1,source, 10, (255, 0, 0), -1)
 
-        cv2.imshow('window', frame)
+        cv2.imshow('window', frame1)
 
         key = cv2.waitKey(2)
 
@@ -78,7 +76,6 @@ def main():
 
     source = []
     dest = []
-
     if len(position)==2:
         source =  (position[0][0]//grid_size, position[0][1]//grid_size)
         dest = (position[1][0]//grid_size , position[1][1]//grid_size)
@@ -164,20 +161,18 @@ def main():
      
      
         fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
-
         if fps>60: myColor = (20,230,20)
         elif fps>20: myColor = (230,20,20)
         else: myColor = (20,20,230)
-
         cv2.putText(img,str(int(fps)), (75, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, myColor, 2);
      
-        img = cv2.polylines(img, [pts] , False, (255,120,255), 3)
+        img= cv2.polylines(img, [pts] , False, (255,120,255), 3)
 
         
         xt = cX
         yt = cY
 
-        if distance(xt, yt ,final_x, final_y) < grid_size:
+        if distance(xt, yt ,final_x, final_y)<grid_size:
             print("destination Reached")
             break
 
@@ -188,7 +183,6 @@ def main():
                 print('next point')
                 index+=1
                 min_v = 500
-
             tempx, tempy = qt[index]
             tempx = tempx*grid_size
             tempy = tempy*grid_size
@@ -221,25 +215,25 @@ def main():
                 min_v = dis2
                 m_x, m_y= p2_x, p2_y
                 val = LEFT
+
             if dis3 < min_v:
                 min_v = dis3
                 m_x,m_y = p3_x, p3_y
                 val = DOWN
+
             if dis4 < min_v:
                 min_v = dis4
                 m_x, m_y = p4_x, p4_y
                 val = UP
 
             x_est, y_est = m_x, m_y
-            SEND_COMMAND = val
+            SEND_COMMAND = str(val)
 
-
-
+        # to print the direcction of the car
         print('Action ' + direction[SEND_COMMAND])
      
-        
-        if LAST_COMMAND != SEND_COMMAND:
-            # s.send(SEND_COMMAND.encode())
+        if LAST_COMMAND != SEND_COMMAND:# or timeElapsed % 3 == 0 :
+            s.send(str(SEND_COMMAND).encode())
             LAST_COMMAND = SEND_COMMAND
 
         if len(path):
@@ -249,17 +243,19 @@ def main():
                     cv2.circle(img,source, 2, (255, 0, 0), 10)
                 else:
                     cv2.circle(img,source, 2, (255, 0, 0), 2) 
-
+        
         cv2.imshow('window', img)
 
-        if cv2.waitKey(2) & 0xFF == 27:
+        time.sleep(0.05)
+        k = cv2.waitKey(2) & 0xFF
+        
+        if k == 27:
             break 
 
 
     SEND_COMMAND = STOP
-    print(SEND_COMMAND.encode())
-    # s.send(SEND_COMMAND.encode())
-    # s.close()
+    s.send(str(SEND_COMMAND).encode())
+    s.close()
     cap.release()
     cv2.destroyAllWindows()
 

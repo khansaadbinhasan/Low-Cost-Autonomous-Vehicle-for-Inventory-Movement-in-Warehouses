@@ -4,6 +4,7 @@ import time
 import astarsearch
 
 
+
 #Traversing through the image to perform image processing
 def sliding_window(image, stepSize, windowSize):
 	# slide a window across the image
@@ -18,6 +19,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 	occupied_grids = []		# List to store coordinates of occupied grid 
 	planned_path = {}		# Dictionary to store information regarding path planning  	
 
+
 	_,image = cap.read()
 
 	image = cv2.resize(image , (frame_width, frame_height))
@@ -29,6 +31,12 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 	blank_image = np.zeros((grid_size,grid_size,3), np.uint8)
 	list_images = [[blank_image for i in range(frame_height//grid_size)] for i in range(frame_width//grid_size)] 	#array of list of images 
 	maze = [[0 for i in range(frame_height//grid_size)] for i in range(frame_width//grid_size)] 			#matrix to represent the grids of individual cropped images
+
+	kernel_open  = np.ones((2,2))
+	kernel_close = np.ones((5,5))
+	
+	yellow_lower = np.array([20, 45, 27])
+	yellow_upper = np.array([30, 255, 255])
 
 	for (x, y, window) in sliding_window(image, stepSize=grid_size, windowSize=(winW, winH)):
 		# if the window does not meet our desired window size, ignore it
@@ -43,43 +51,64 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		
 
 		img = window
-
-		# cv2.imshow("second_window",img)
+		
+		ctl = img
 	
 
-		# dominant color concept to find the dominant color in each windoew
-		pixels = np.float32(img.reshape(-1, 3))
+		hsv = cv2.cvtColor(ctl, cv2.COLOR_BGR2HSV)
 
-		# nuber of dominant color to find inside the window
-		n_colors = 3
-		criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, .1)
+		mask0 = cv2.inRange(hsv, yellow_lower, yellow_upper)
+
+		mask = mask0
+
+		mask_op = cv2.morphologyEx(mask , cv2.MORPH_OPEN, kernel_open)
+
+		mask_cl = cv2.morphologyEx(mask_op, cv2.MORPH_CLOSE, kernel_close)
+
+		Z = mask_cl.reshape((-1,1))
+
+		Z = np.float32(Z)
+
+		n_colors = 2
+
+		criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1)
+
 		flags = cv2.KMEANS_RANDOM_CENTERS
 
-		_, labels, palette = cv2.kmeans(pixels, n_colors, None, criteria, 10, flags)
+		_, labels, palette = cv2.kmeans(Z, n_colors, None, criteria, 10, flags)
+
 		_, counts = np.unique(labels, return_counts=True)
+
 		dominant = palette[np.argmax(counts)]
 
+		center = np.uint8(palette)
 
-		# this is used for is there any black in the window 
+		res = center[labels.flatten()]
+
+		res2 = res.reshape((mask_cl.shape))
+
+		# cv2.imshow('res2',res2)
+
+
 		print('decision' + str(decision))
-		if decision == 1:
+		if decision==1:
 			flag = 0
+			# print(palette)
 			for i in palette:
-				if (all(j<=40 for j in i)):
+				if i[0]>=250:
 					# print(i)
 					if (flag==0):
 						maze[index[1]-1][index[0]-1] = 1		
-						cv2.rectangle(image, (x, y),(x + winW, y + winH), (0, 0, 0),-1)		
+						cv2.rectangle(image, (x, y),(x + winW, y + winH), (255, 0, 0),-1)		
 						occupied_grids.append(tuple(index))	
 						flag = 1
-			
+				
 			cv2.putText(clone,str(maze[index[1]-1][index[0]-1]),(x, y),
 				cv2.FONT_HERSHEY_SIMPLEX ,1
 				,(255,0,0),2, cv2.LINE_AA)
 
 		cv2.imshow("window", clone)
 		cv2.waitKey(1)
-		time.sleep(0.01)
 	
 		#Iterate
 		index[1] = index[1] + 1							
@@ -99,8 +128,21 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 	result = list(list2[1:-1]) 			#Result contains the minimum path required 
 
 	key = cv2.waitKey(1)
+
 	if key==27:
 		cv2.destroyAllWindows()
 		cap.release()
 
 	return occupied_grids, list2
+
+
+
+if __name__ == '__main__':
+
+    # change filename to check for other images
+    image_filename = "test_images/test_image3.jpg"
+
+    main(image_filename)
+
+    cv2.waitKey(0)
+    
