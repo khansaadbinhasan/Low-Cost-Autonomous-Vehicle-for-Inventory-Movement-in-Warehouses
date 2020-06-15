@@ -7,7 +7,7 @@ import time
 import socket
 # import traversal
 
-from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision, TCP_IP, TCP_PORT
+from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision, TCP_IP_RPI, TCP_PORT_WASD, TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA, BUFFER_SIZE
 
 
 
@@ -38,13 +38,57 @@ def draw_circle(event , x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDBLCLK:
         position.append((x, y))
 
+def make_connections():
+    s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s1.connect((TCP_IP_RPI, TCP_PORT_WASD))
+
+
+    s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s2.bind((TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA))
+    s2.listen(1)
+
+    conn, addr = s2.accept()
+    print ('Connection address:', addr)
+
+
+    return s1, conn
+
+def get_IMU_data(conn):
+    dataString = str(conn.recv(BUFFER_SIZE))
+
+
+    dataList = dataString.split(',')
+
+    accelX, accelY, accelZ = dataList[0], dataList[1], dataList[2]
+    gyroX, gyroY, gyroZ = dataList[3], dataList[4], dataList[5]
+    magX, magY, magZ = dataList[6], dataList[7], dataList[8]
+    temp = dataList[9]
+
+    accel = {'x': accelX,
+             'y': accelY,
+             'z': accelZ
+            }
+
+    gyro = {'x': gyroX,
+            'y': gyroY,
+            'z': gyroZ
+           }
+
+    mag = {'x': magX,
+           'y': magY,
+           'z': magZ
+          }
+
+    return accel, gyro, mag, temp
+
 
 def main():
     SEND_COMMAND = STOP
     LAST_COMMAND = SEND_COMMAND
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((TCP_IP, TCP_PORT))
+    s, conn = make_connections()
+    
+
 
 
     # deque for movement detection
@@ -133,6 +177,14 @@ def main():
 
     while True:
 
+        accel, gyro, mag, temp = get_IMU_data(conn)
+
+        print("accel: ", accel)
+        print("gyro: ", gyro)
+        print("mag: ", mag)
+        print("temp: ", temp)
+
+
         timer = cv2.getTickCount()
         success, img = cap.read()
         img = cv2.resize(img,(frame_width, frame_height))
@@ -188,7 +240,7 @@ def main():
             tempy = tempy*grid_size
             x_est, y_est = xt, yt
 
-            print(tempx, tempy)
+            # print(tempx, tempy)
             cv2.circle(img,(int(x_est), int(y_est)), 2, (0, 255, 0), 5)
             cv2.putText(img, str(int(x_est)) + " "+ str(int(y_est)), (int(x_est), int(y_est)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255,255 ), 2)
 
@@ -256,6 +308,7 @@ def main():
     SEND_COMMAND = STOP
     s.send(str(SEND_COMMAND).encode())
     s.close()
+    conn.close()
     cap.release()
     cv2.destroyAllWindows()
 
