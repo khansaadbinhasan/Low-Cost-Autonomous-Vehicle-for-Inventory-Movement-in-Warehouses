@@ -127,6 +127,46 @@ def get_IMU_data(conn):
 
     return accel, gyro, mag, temp
 
+def destination_reached(cX, cY ,final_x, final_y):
+    if distance(cX, cY ,final_x, final_y) < grid_size:
+        return True
+
+    return False
+
+
+def get_cmd(cX, cY, min_v, tempx, tempy):
+    cmd = STOP
+
+    p1_x, p1_y = cX + 1, cY 
+    p2_x, p2_y = cX - 1, cY 
+    p3_x, p3_y = cX , cY +1
+    p4_x, p4_y = cX , cY -1
+
+    dis1 = distance(p1_x, p1_y, tempx, tempy)
+    dis2 = distance(p2_x, p2_y, tempx, tempy)
+    dis3 = distance(p3_x, p3_y, tempx, tempy)
+    dis4 = distance(p4_x, p4_y, tempx, tempy)
+
+    if dis1 < min_v:
+        min_v = dis1
+        cmd = RIGHT
+
+    if dis2 < min_v:
+        min_v = dis2
+        cmd = LEFT
+
+    if dis3 < min_v:
+        min_v = dis3
+        cmd = DOWN
+
+    if dis4 < min_v:
+        min_v = dis4
+        cmd = UP
+
+    return cmd
+
+
+
 def finish(conn, s, cap, SEND_COMMAND):
     s.send(SEND_COMMAND.encode())
     s.close()
@@ -157,7 +197,7 @@ def main():
 
     min_v = 500
     m_x, m_y = 0,0
-    val = 0
+    cmd = 0
 
     tempx, tempy = 0, 0
 
@@ -184,11 +224,11 @@ def main():
      
         if success:
             drawBox(img,bbox)
-            x = int(bbox[0] + (bbox[2]/2))
-            y = int(bbox[1] + (bbox[3]/2))
-            cX = x
-            cY = y
-            cv2.putText(img,str(x) + " " +str(y), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            
+            cX = int(bbox[0] + (bbox[2]/2))
+            cY = int(bbox[1] + (bbox[3]/2))
+
+            cv2.putText(img,str(cX) + " " +str(cY), (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
         else:
             cv2.putText(img, "Lost", (100, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
@@ -200,71 +240,34 @@ def main():
             # if the window does not meet our desired window size, ignore it
             if window.shape[0] != winH or window.shape[1] != winW:
                 continue
+
             cv2.rectangle(img, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
-     
-     
+
      
         fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
         cv2.putText(img,str(int(fps)), (75, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (20,20,230), 2);
      
         img = cv2.polylines(img, [pts] , False, (255,120,255), 3)
 
-        
-        xt = cX
-        yt = cY
 
-        if distance(xt, yt ,final_x, final_y) < grid_size:
+        #This function is not working correctly
+        if destination_reached(cX, cY ,final_x, final_y):
             print("destination Reached")
             break
 
 
         if index < len(qt) - 1:
             # assume vehicle did not stop at any of the subgoal
-            if distance(tempx, tempy ,xt, yt) < grid_size:
+            if distance(tempx, tempy ,cX, cY) < grid_size:
                 print('next point')
                 index += 1
                 min_v = 500
 
             tempx, tempy = qt[index]
-            tempx = tempx*grid_size
-            tempy = tempy*grid_size
-            x_est, y_est = xt, yt
+            tempx, tempy = tempx*grid_size, tempy*grid_size
 
-            draw_pos_info(img, x_est, y_est, tempx, tempy)
-
-
-            p1_x, p1_y = xt + 1, yt 
-            p2_x, p2_y = xt - 1, yt 
-            p3_x, p3_y = xt , yt +1
-            p4_x, p4_y = xt , yt -1
-
-            dis1 = distance(p1_x, p1_y, tempx, tempy)
-            dis2 = distance(p2_x, p2_y, tempx, tempy)
-            dis3 = distance(p3_x, p3_y, tempx, tempy)
-            dis4 = distance(p4_x, p4_y, tempx, tempy)
-
-            if dis1 < min_v:
-                min_v = dis1
-                m_x , m_y= p1_x, p1_y
-                val = RIGHT
-
-            if dis2 < min_v:
-                min_v = dis2
-                m_x, m_y= p2_x, p2_y
-                val = LEFT
-
-            if dis3 < min_v:
-                min_v = dis3
-                m_x,m_y = p3_x, p3_y
-                val = DOWN
-
-            if dis4 < min_v:
-                min_v = dis4
-                m_x, m_y = p4_x, p4_y
-                val = UP
-
-            x_est, y_est = m_x, m_y
-            SEND_COMMAND = val
+            draw_pos_info(img, cX, cY, tempx, tempy)
+            SEND_COMMAND = get_cmd(cX, cY, min_v, tempx, tempy)
 
         # to print the direcction of the car
         print('Action ' + direction[SEND_COMMAND])
