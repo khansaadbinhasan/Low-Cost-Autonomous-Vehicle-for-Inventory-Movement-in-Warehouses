@@ -33,55 +33,22 @@ def periodic_exec():
 # now we'll define two threaded callback functions  
 # these will run in another thread when our events are detected  
 def my_callback1(channel):  
-    # print("falling edge detected on 27")
     global counter1 
     counter1 = counter1 + 1
 
-  #   timePassed1 = get_time_elapsed(time1)
-
-  #   if timePassed1 % 1000 == 0:
-		# rotation1 = (counter1 / 20) * 60
-		# print("Motor Speed: ", rotation1, " RPM")
-		# counter1 = 0
-
   
 def my_callback2(channel):  
-    # print("falling edge detected on 14")
     global counter2
     counter2 = counter2 + 1
 
-  #   timePassed2 = get_time_elapsed(time2)
-
-  #   if timePassed2 % 1000 == 0:
-		# rotation2 = (counter2 / 20) * 60
-		# print("Motor Speed: ", rotation2, " RPM")
-		# counter2 = 0
   
 def my_callback3(channel):  
-    # print("falling edge detected on 15")
     global counter3
     counter3 = counter3 + 1
 
-  #   timePassed3 = get_time_elapsed(time3)
-
-  #   if timePassed3 % 1000 == 0:
-		# rotation3 = (counter3 / 20) * 60
-		# print("Motor Speed: ", rotation3, " RPM")
-		# counter3 = 0
-  
 def my_callback4(channel):  
-    # print("falling edge detected on 17")
     global counter4
     counter4 = counter4 + 1
-
-  #   timePassed4 = get_time_elapsed(time4)
-
-  #   if timePassed4 % 1000 == 0:
-		# rotation4 = (counter4 / 20) * 60
-		# print("Motor Speed: ", rotation4, " RPM")
-		# counter4 = 0
-  
-
 
 
 
@@ -123,8 +90,6 @@ if __name__ == '__main__':
 	GPIO.add_event_detect(17, GPIO.RISING, callback=my_callback4, bouncetime=1)  
 
 
-
-
 	sched = BackgroundScheduler()
 
 	# seconds can be replaced with minutes, hours, or days
@@ -133,7 +98,7 @@ if __name__ == '__main__':
 	
 
 	while True:
-		a = 2
+		continue
 
 
 	sched.shutdown()
