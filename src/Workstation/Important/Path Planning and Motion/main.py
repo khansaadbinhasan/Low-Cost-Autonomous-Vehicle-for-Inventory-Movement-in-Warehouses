@@ -1,29 +1,13 @@
-import process_image
-import cv2
+import cv2, imutils
 import numpy as np
-import imutils
-from collections import deque
-import time
 import socket
-# import traversal
+import time
 
-from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision, TCP_IP_RPI, TCP_PORT_WASD, TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA, BUFFER_SIZE
+import process_image
+from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision, TCP_IP_RPI, TCP_PORT_WASD, TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA, BUFFER_SIZE, tracker
 
-
-
-############### Tracker Types #####################
- 
-#tracker = cv2.TrackerBoosting_create()
-#tracker = cv2.TrackerMIL_create()
-tracker = cv2.TrackerKCF_create()
-#tracker = cv2.TrackerTLD_create()
-#tracker = cv2.TrackerMedianFlow_create()
-#tracker = cv2.TrackerCSRT_create()
-
-# tracker = cv2.TrackerMOSSE_create()
 
 position = []
-
 
 def drawBox(img,bbox):
     x, y, w, h = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
@@ -53,6 +37,68 @@ def make_connections():
 
     return s1, conn
 
+def draw_source_dest(cap):
+    # function to draw the source and destination
+    cv2.namedWindow('window')
+    cv2.setMouseCallback('window' , draw_circle)
+
+
+    while True:
+
+        _, frame = cap.read()
+
+        frame = cv2.resize(frame,(frame_width, frame_height))
+        
+        if len(position):
+            for i in range(len(position)):
+                source = (position[i][0], position[i][1])
+                cv2.circle(frame,source, 10, (255, 0, 0), -1)
+
+        cv2.imshow('window', frame)
+
+        if cv2.waitKey(2) == 27:
+            break  
+
+def get_source_dest():
+    if len(position)==2:
+        source = (position[0][0]//grid_size, position[0][1]//grid_size)
+        dest = (position[1][0]//grid_size , position[1][1]//grid_size)
+
+        return source, dest
+
+def intialize_tracker(cap):
+    success, frame = cap.read()
+    frame = cv2.resize(frame,(frame_width, frame_height))
+    bbox = cv2.selectROI("window",frame, False)
+    tracker.init(frame, bbox)
+
+    return bbox
+
+def get_qt_path_pts(planned_path):
+    path = []
+
+    for x, y in planned_path:
+        path.append((x*grid_size, y*grid_size))
+
+
+    qt = list()
+
+    for x in range(len(planned_path)):
+        i , j = planned_path[x]
+        qt.append((i , j))
+
+    pts = np.array(path , np.int32)
+
+    return qt, path, pts
+
+def draw_pos_info(img, x_est, y_est, tempx, tempy):
+    cv2.circle(img,(int(x_est), int(y_est)), 2, (0, 255, 0), 5)
+    cv2.putText(img, str(int(x_est)) + " "+ str(int(y_est)), (int(x_est), int(y_est)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255,255 ), 2)
+
+    cv2.circle(img,(int(tempx), int(tempy)), 10, (0, 255, 0), 5)
+    cv2.circle(img,(int(tempx), int(tempy)), 15, (0, 255, 0), 5)
+    cv2.putText(img, str(int(tempx)) + " "+ str(int(tempy)), (int(tempx), int(tempy)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255,255 ), 2)
+
 def get_IMU_data(conn):
     dataString = str(conn.recv(BUFFER_SIZE))
 
@@ -81,93 +127,39 @@ def get_IMU_data(conn):
 
     return accel, gyro, mag, temp
 
+def finish(conn, s, cap, SEND_COMMAND):
+    s.send(SEND_COMMAND.encode())
+    s.close()
+    conn.close()
+    cap.release()
+    cv2.destroyAllWindows()
 
 def main():
     SEND_COMMAND = STOP
     LAST_COMMAND = SEND_COMMAND
 
-    s, conn = make_connections()
-    
+    # s, conn = make_connections()
 
-
-
-    # deque for movement detection
-    pt = deque(maxlen=10)
     cap = cv2.VideoCapture(numCam)
 
-    cv2.namedWindow('window')
-    cv2.setMouseCallback('window' , draw_circle)
+    draw_source_dest(cap)
+    source, dest = get_source_dest()
 
-    # function to draw the source and destination
+    occupied_grids, planned_path = process_image.main(source, dest, cap, grid_size, frame_width, frame_height, decision)
 
-    while True:
-
-        _, frame1 = cap.read()
-
-        frame1 = cv2.resize(frame1,(frame_width, frame_height))
-        if len(position):
-            for i in range(len(position)):
-                source = (position[i][0], position[i][1])
-                cv2.circle(frame1,source, 10, (255, 0, 0), -1)
-
-        cv2.imshow('window', frame1)
-
-        key = cv2.waitKey(2)
-
-        if key == 27:
-            break  
-
-
-    source = []
-    dest = []
-    if len(position)==2:
-        source =  (position[0][0]//grid_size, position[0][1]//grid_size)
-        dest = (position[1][0]//grid_size , position[1][1]//grid_size)
-
-    occupied_grids, planned_path = process_image.main(source , dest,cap,grid_size, frame_width, frame_height,decision)
-
-
-
-    print("Planned Path :", planned_path)
-    print("actual coordinates")
-
-    path = []
-
-    for x, y in planned_path:
-        path.append((x*grid_size, y*grid_size))
-
-    print(path)
-
-    frame = np.zeros((frame_width, frame_height,3),np.uint8)
-
-    qt = list()
-
-    for x in range(len(planned_path)):
-        i , j = planned_path[x]
-        qt.append((i , j))
-
-
-
-
-    pts = np.array(path , np.int32)
+    qt, path, pts = get_qt_path_pts(planned_path)
 
     index = 0 # index of the list qt
 
-    success, frame = cap.read()
-    frame = cv2.resize(frame,(frame_width, frame_height))
-    bbox = cv2.selectROI("window",frame, False)
-    tracker.init(frame, bbox)
+    bbox = intialize_tracker(cap)
 
-
-    cX = 0
-    cY = 0
+    cX, cY = 0, 0
 
     min_v = 500
     m_x, m_y = 0,0
     val = 0
 
-    tempx = 0
-    tempy = 0
+    tempx, tempy = 0, 0
 
     # destination of the path to reach 
     final_x, final_y = qt[-1]
@@ -177,12 +169,12 @@ def main():
 
     while True:
 
-        accel, gyro, mag, temp = get_IMU_data(conn)
+        # accel, gyro, mag, temp = get_IMU_data(conn)
 
-        print("accel: ", accel)
-        print("gyro: ", gyro)
-        print("mag: ", mag)
-        print("temp: ", temp)
+        # print("accel: ", accel)
+        # print("gyro: ", gyro)
+        # print("mag: ", mag)
+        # print("temp: ", temp)
 
 
         timer = cv2.getTickCount()
@@ -213,40 +205,33 @@ def main():
      
      
         fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
-        if fps>60: myColor = (20,230,20)
-        elif fps>20: myColor = (230,20,20)
-        else: myColor = (20,20,230)
-        cv2.putText(img,str(int(fps)), (75, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, myColor, 2);
+        cv2.putText(img,str(int(fps)), (75, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (20,20,230), 2);
      
-        img= cv2.polylines(img, [pts] , False, (255,120,255), 3)
+        img = cv2.polylines(img, [pts] , False, (255,120,255), 3)
 
         
         xt = cX
         yt = cY
 
-        if distance(xt, yt ,final_x, final_y)<grid_size:
+        if distance(xt, yt ,final_x, final_y) < grid_size:
             print("destination Reached")
             break
 
 
         if index < len(qt) - 1:
-            # assume evchicle did not stop at any of the subgoal
-            if distance(tempx, tempy ,xt, yt)<grid_size:
+            # assume vehicle did not stop at any of the subgoal
+            if distance(tempx, tempy ,xt, yt) < grid_size:
                 print('next point')
-                index+=1
+                index += 1
                 min_v = 500
+
             tempx, tempy = qt[index]
             tempx = tempx*grid_size
             tempy = tempy*grid_size
             x_est, y_est = xt, yt
 
-            # print(tempx, tempy)
-            cv2.circle(img,(int(x_est), int(y_est)), 2, (0, 255, 0), 5)
-            cv2.putText(img, str(int(x_est)) + " "+ str(int(y_est)), (int(x_est), int(y_est)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255,255 ), 2)
+            draw_pos_info(img, x_est, y_est, tempx, tempy)
 
-            cv2.circle(img,(int(tempx), int(tempy)), 10, (0, 255, 0), 5)
-            cv2.circle(img,(int(tempx), int(tempy)), 15, (0, 255, 0), 5)
-            cv2.putText(img, str(int(tempx)) + " "+ str(int(tempy)), (int(tempx), int(tempy)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255,255 ), 2)
 
             p1_x, p1_y = xt + 1, yt 
             p2_x, p2_y = xt - 1, yt 
@@ -279,13 +264,13 @@ def main():
                 val = UP
 
             x_est, y_est = m_x, m_y
-            SEND_COMMAND = str(val)
+            SEND_COMMAND = val
 
         # to print the direcction of the car
         print('Action ' + direction[SEND_COMMAND])
      
         if LAST_COMMAND != SEND_COMMAND:# or timeElapsed % 3 == 0 :
-            s.send(str(SEND_COMMAND).encode())
+            # s.send(SEND_COMMAND.encode())
             LAST_COMMAND = SEND_COMMAND
 
         if len(path):
@@ -298,20 +283,12 @@ def main():
         
         cv2.imshow('window', img)
 
-        time.sleep(0.05)
-        k = cv2.waitKey(2) & 0xFF
-        
-        if k == 27:
+        if cv2.waitKey(2) & 0xFF == 27:
             break 
 
 
     SEND_COMMAND = STOP
-    s.send(str(SEND_COMMAND).encode())
-    s.close()
-    conn.close()
-    cap.release()
-    cv2.destroyAllWindows()
-
+    # finish(conn, s, cap, SEND_COMMAND)
 
 if __name__ == '__main__':
     main()

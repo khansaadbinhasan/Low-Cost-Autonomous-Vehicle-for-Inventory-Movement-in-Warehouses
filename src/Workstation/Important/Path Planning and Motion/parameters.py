@@ -30,3 +30,18 @@ TCP_IP_WORKSTATION = '0.0.0.0'
 TCP_PORT_IMU_DATA = 5007 # Port number on which to send data
 BUFFER_SIZE = 200 # Normally 1024, but I want fast response
 
+
+
+############### Tracker Types #####################
+
+import cv2
+ 
+#tracker = cv2.TrackerBoosting_create()
+#tracker = cv2.TrackerMIL_create()
+tracker = cv2.TrackerKCF_create()
+#tracker = cv2.TrackerTLD_create()
+#tracker = cv2.TrackerMedianFlow_create()
+#tracker = cv2.TrackerCSRT_create()
+
+# tracker = cv2.TrackerMOSSE_create()
+

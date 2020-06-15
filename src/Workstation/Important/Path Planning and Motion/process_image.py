@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import time
 import astarsearch
 
 
@@ -90,7 +89,7 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		# cv2.imshow('res2',res2)
 
 
-		print('decision' + str(decision))
+		# print('decision' + str(decision))
 		if decision==1:
 			flag = 0
 			# print(palette)
