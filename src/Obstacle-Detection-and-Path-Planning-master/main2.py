@@ -4,12 +4,12 @@ import socket
 import time
 import rst
 
-from numpy import array, dot, arccos, clip
-from numpy.linalg import norm
+# from numpy import array, dot, arccos, clip
+# from numpy.linalg import norm
 
 
 import process_image
-from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision, TCP_IP_RPI, TCP_PORT_WASD, TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA, BUFFER_SIZE, tracker
+from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision, TCP_IP_RPI, TCP_PORT_WASD, TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA, BUFFER_SIZE, tracker, minTheta
 
 
 position = []
@@ -209,11 +209,20 @@ def finish(conn, s, cap, SEND_COMMAND):
 
 
 def angle_between(u, v):
-    c = dot(u,v)/norm(u)/norm(v) 
-    angle = arccos(clip(c, -1, 1)) 
+    c = np.dot(u,v)/np.linalg.norm(u)/np.linalg.norm(v) 
+    angle = np.arccos(np.clip(c, -1, 1)) 
     angle_degs = np.degrees(angle)
 
+
+    c = np.cross(v,u)/np.linalg.norm(u)/np.linalg.norm(v) 
+    angle_sin = np.arcsin(np.clip(c, -1, 1)) 
+
+    if angle_sin < 0:
+        return -1*angle_degs
+
+
     return angle_degs
+
 
 def get_result(u,v):
     
@@ -223,16 +232,16 @@ def get_result(u,v):
 
     result = STOP
 
-    if angle_btw < 15 and angle_btw > 360 - 15:
+    if angle_btw < minTheta and angle_btw > -minTheta:
         result = UP
 
-    elif angle_btw < 180 - 15 and angle_btw > 15:
+    elif angle_btw < 180 - minTheta and angle_btw > minTheta:
         result = LEFT
 
-    elif angle_btw > 180 - 15 and angle_btw < 360 - 15:
+    elif angle_btw > -(180 - minTheta) and angle_btw < -minTheta:
         result = RIGHT
 
-    elif angle_btw > 180 - 15 and angle_btw < 180 + 15:
+    elif angle_btw > 180 - minTheta and angle_btw < 180 + minTheta:
         result = DOWN
 
     else:

@@ -45,3 +45,4 @@ tracker = cv2.TrackerKCF_create()
 
 # tracker = cv2.TrackerMOSSE_create()
 
+minTheta = 15
