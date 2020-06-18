@@ -333,6 +333,42 @@ def run_tracker_algo(tracker, img, final_x, final_y, qt, grid_size, min_v):
     return SEND_COMMAND
 
 
+def run_heading_algo(img, o1,o2, p1, p2, qt):
+    x1, y1 = 0, 0
+    x2, y2 = 0, 0
+
+    try:
+        # for drawing the matrix on to the frame
+        x1, y1, _ = rst.get_moments(img, o1, o2, 1)
+        x2, y2, _ = rst.get_moments(img, p1, p2, 2)
+
+    except:
+        pass
+
+    xt = (x1+x2)//2
+    yt = (y1+y2)//2
+
+    cv2.circle(img,(int(xt), int(yt)), 2, (0, 255, 0), 5)
+
+    next_x, next_y = next_point(img, qt, xt, yt)
+    
+    if (next_x == -1 and next_y == -1):
+        print("destination Reached")
+        SEND_COMMAND = 'done'
+
+    u = ( x2 - x1, y2 - y1 )
+    v = ( xt - next_x, yt - next_y )
+
+    SEND_COMMAND = get_result(u,v)
+
+    img = cv2.line(img,(x1, y1),(x2, y2), (0,255,0), 3)
+    img = cv2.line(img, (xt, yt),(next_x, next_y),(0,0,255), 3)
+
+
+    return SEND_COMMAND
+
+
+
 def main():
     SEND_COMMAND = STOP
     LAST_COMMAND = SEND_COMMAND
@@ -383,48 +419,19 @@ def main():
         _, img = cap.read()
         img = cv2.resize(img,(frame_width, frame_height))
 
-        x1, y1 = 0, 0
-        x2, y2 = 0, 0
-
-        try:
-            # for drawing the matrix on to the frame
-            x1, y1, _ = rst.get_moments(img, o1, o2, 1)
-            x2, y2, _ = rst.get_moments(img, p1, p2, 2)
-
-        except:
-            pass
-
-        xt = (x1+x2)//2
-        yt = (y1+y2)//2
-
-        cv2.circle(img,(int(xt), int(yt)), 2, (0, 255, 0), 5)
-
-        next_x, next_y = next_point(img, qt, xt, yt)
-        
-        if (next_x == -1 and next_y == -1):
-            print("destination Reached")
-            break
-
-        u = ( x2 - x1, y2 - y1 )
-        v = ( xt - next_x, yt - next_y )
-        SEND_COMMAND = get_result(u,v)
-
-        LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
-
-        img = cv2.line(img,(x1, y1),(x2, y2), (0,255,0), 3)
-        img = cv2.line(img, (xt, yt),(next_x, next_y),(0,0,255), 3)
-
-
         draw_circle_on_source(img, path)
         make_grids(img, grid_size, winW, winH)
 
         img = cv2.polylines(img, [pts] , False, (255,120,255), 3)
 
-        # # SEND_COMMAND = run_tracker_algo(tracker, img, final_x, final_y, qt, grid_size, min_v)
+        # SEND_COMMAND = run_tracker_algo(tracker, img, final_x, final_y, qt, grid_size, min_v)
+        SEND_COMMAND = run_heading_algo(img, o1,o2, p1, p2, qt)
+        LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
 
 
-        # if SEND_COMMAND == 'done':
-        #     break
+
+        if SEND_COMMAND == 'done':
+            break
 
         # to print the direcction of the car
         print('Action ' + direction[SEND_COMMAND])
