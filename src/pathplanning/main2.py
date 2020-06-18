@@ -45,19 +45,19 @@ TCP_PORT = 5005
 
 
 # default size of the grid and the frame
-grid_size = 64
+grid_size = 32
 frame_height= 640
 frame_width= 640
+decision = 0
 
-
-print('enter the grid size')
-grid_size = int(input())
-print('enter the frame_height')
-frame_height = int(input())
-print('enter the frame_width')
-frame_width = int(input())
-print('With object detection or not--> 0= NO and 1= YES')
-decision = int(input())
+# print('enter the grid size')
+# grid_size = int(input())
+# print('enter the frame_height')
+# frame_height = int(input())
+# print('enter the frame_width')
+# frame_width = int(input())
+# print('With object detection or not--> 0= NO and 1= YES')
+# decision = int(input())
 
 
 
@@ -116,7 +116,7 @@ def next_point(img, qt, xt, yt):
         return tempx, tempy
 
 
-cap1 = cv2.VideoCapture(0)
+cap1 = cv2.VideoCapture(1)
 
 
 
@@ -157,7 +157,7 @@ if len(position)==2:
     source =  (position[0][0]//grid_size, position[0][1]//grid_size)
     dest = (position[1][0]//grid_size , position[1][1]//grid_size)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 occupied_grids, planned_path= process_image.main(source , dest,cap,grid_size, frame_width, frame_height,decision)
 
@@ -188,10 +188,10 @@ pts = np.array(path , np.int32)
 
 # colors that need to adjusted
 
-o1 = [93,168,22] # green sticker
-o2 = [100,255,255]
-p1 = [107,120,16] # blue sticker
-p2 = [130,255,255]
+o1 = [0,196,206] # green sticker
+o2 = [54,255,255]
+p1 = [102,51,29] # blue sticker
+p2 = [146,183,87]
 
 while True:
 
@@ -202,8 +202,8 @@ while True:
     x1, y1, ret1 = rst.get_moments(img, o1, o2, 1)
     x2, y2, ret2 = rst.get_moments(img, p1, p2, 2)
 
-    cv2.imshow('Orange',ret1)
-    cv2.imshow('Pink',ret2)
+    # cv2.imshow('Orange',ret1)
+    # cv2.imshow('Pink',ret2)
 
     xt = (x1+x2)//2
     yt = (y1 +y2)//2
@@ -221,7 +221,10 @@ while True:
     #     print("destination Reached")
 
     car_angle=rst.get_direction(x1, y1, x2, y2)
-    actual_angle = rst.get_direction(xt, yt, tempx, tempy)
+    actual_angle = rst.get_direction(next_x, next_y, xt, yt)
+
+    car_angle = 180 - car_angle
+    actual_angle = 180 - actual_angle
 
     result=rst.path_encode(car_angle, actual_angle)
 
