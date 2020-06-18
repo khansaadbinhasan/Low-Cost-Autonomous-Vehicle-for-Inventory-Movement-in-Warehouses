@@ -17,6 +17,22 @@ tempx = 0
 tempy = 0
 index = 0
 
+
+def get_direc(res):
+    direction= ""
+    if res=='0':
+        direction  = "Stop"
+    if res =='1':
+        direction = "up"
+    if res =='2':
+        direction = "down"
+    if res =='3':
+        direction = "right"
+    if res =='4':
+        direction = "left"
+
+    return direction
+
 def next_point(img, qt, xt, yt):
 
         # assume evchicle did not stop at any of the subgoal
@@ -288,10 +304,14 @@ def main():
 
     # colors that need to adjusted
 
-    o1 = [0,196,206] # green sticker
+    o1 = [0,196,206] 
     o2 = [54,255,255]
-    p1 = [102,51,29] # blue sticker
+    p1 = [102,51,29] 
     p2 = [146,183,87]
+    # o1 = [20,120,62] # green sticker
+    # o2 = [35,255,255]
+    # p1 = [107,120,16] # blue sticker
+    # p2 = [130,255,255]
 
 
     while True:
@@ -355,6 +375,7 @@ def main():
         u = ( x2 - x1, y2 - y1 )
         v = ( xt - next_x, yt - next_y )
         result = get_result(u,v)
+        print(get_direc(result))
         print(result)
 
         img = cv2.line(img,(x1, y1),(x2, y2), (0,255,0), 3)
@@ -384,18 +405,6 @@ def main():
         #         continue
 
         #     cv2.rectangle(img, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
-
-     
-        # fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
-        # cv2.putText(img,str(int(fps)), (75, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (20,20,230), 2);
-     
-        # img = cv2.polylines(img, [pts] , False, (255,120,255), 3)
-
-
-        # #This function is not working correctly
-        # if destination_reached(cX, cY ,final_x, final_y):
-        #     print("destination Reached")
-        #     break
 
 
         # if index < len(qt) - 1:
