@@ -17,6 +17,7 @@ tempx = 0
 tempy = 0
 index = 0
 
+
 def next_point(img, qt, xt, yt):
 
         # assume evchicle did not stop at any of the subgoal
@@ -405,10 +406,14 @@ def main():
 
     # colors that need to adjusted
 
-    o1 = [0,196,206] # green sticker
+    o1 = [0,196,206] 
     o2 = [54,255,255]
-    p1 = [102,51,29] # blue sticker
+    p1 = [102,51,29] 
     p2 = [146,183,87]
+    # o1 = [20,120,62] # green sticker
+    # o2 = [35,255,255]
+    # p1 = [107,120,16] # blue sticker
+    # p2 = [130,255,255]
 
 
     while True:
@@ -429,6 +434,14 @@ def main():
         LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
 
 
+<<<<<<< HEAD
+=======
+        u = ( x2 - x1, y2 - y1 )
+        v = ( xt - next_x, yt - next_y )
+        result = get_result(u,v)
+        print(get_direc(result))
+        print(result)
+>>>>>>> 9a8326d97031cbab8c5b5f77f3ca4b463c7a64f1
 
         if SEND_COMMAND == 'done':
             break
@@ -447,6 +460,54 @@ def main():
             break 
 
 
+<<<<<<< HEAD
+=======
+
+
+        # # this code is used for making grids
+        # for (x, y, window) in process_image.sliding_window(img, stepSize=grid_size, windowSize=(winW, winH)):
+        #     # if the window does not meet our desired window size, ignore it
+        #     if window.shape[0] != winH or window.shape[1] != winW:
+        #         continue
+
+        #     cv2.rectangle(img, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
+
+
+        # if index < len(qt) - 1:
+        #     # assume vehicle did not stop at any of the subgoal
+        #     if distance(tempx, tempy ,cX, cY) < grid_size:
+        #         print('next point')
+        #         index += 1
+        #         min_v = 500
+
+        #     tempx, tempy = qt[index]
+        #     tempx, tempy = tempx*grid_size, tempy*grid_size
+
+        #     draw_pos_info(img, cX, cY, tempx, tempy)
+        #     SEND_COMMAND = get_cmd(cX, cY, min_v, tempx, tempy)
+
+        # # to print the direcction of the car
+        # print('Action ' + direction[SEND_COMMAND])
+     
+        # if LAST_COMMAND != SEND_COMMAND:# or timeElapsed % 3 == 0 :
+        #     # s.send(SEND_COMMAND.encode())
+        #     LAST_COMMAND = SEND_COMMAND
+
+        # if len(path):
+        #     for i in range(len(path)):
+        #         source = (path[i][0], path[i][1])
+        #         if i==0 or i==len(path)-1:
+        #             cv2.circle(img,source, 2, (255, 0, 0), 10)
+        #         else:
+        #             cv2.circle(img,source, 2, (255, 0, 0), 2) 
+        
+        # cv2.imshow('window', img)
+
+        # if cv2.waitKey(2) & 0xFF == 27:
+        #     break 
+
+
+>>>>>>> 9a8326d97031cbab8c5b5f77f3ca4b463c7a64f1
     SEND_COMMAND = STOP
     finish(s, cap, SEND_COMMAND)
     # finish(conn, s, cap, SEND_COMMAND)

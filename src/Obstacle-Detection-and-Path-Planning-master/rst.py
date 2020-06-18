@@ -53,14 +53,16 @@ def get_moments(img, param1, param2, mode=0):
             max_area = area
         index1 = index1 + 1
 
+    if len(contours):
+        M = cv2.moments(contours[biggest])
+        cx = int(M['m10']//M['m00'])
+        cy = int(M['m01']//M['m00'])
 
-    M = cv2.moments(contours[biggest])
-    cx = int(M['m10']//M['m00'])
-    cy = int(M['m01']//M['m00'])
+        cv2.circle(img1, (cx, cy), 10, (0, 255, 0), -1)
 
-    cv2.circle(img1, (cx, cy), 10, (0, 255, 0), -1)
-
-    return cx, cy, img1
+        return cx, cy, img1
+    else:
+        return 0,0,img1
 
 
 
