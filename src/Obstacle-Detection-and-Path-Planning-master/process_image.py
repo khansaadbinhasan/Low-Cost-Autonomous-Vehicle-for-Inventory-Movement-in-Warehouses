@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import time
 import astarsearch
 
 
@@ -49,20 +48,10 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		list_images[index[0]-1][index[1]-1] = crop_img.copy()		
 
 		
+		hsv = cv2.cvtColor(window.copy(), cv2.COLOR_BGR2HSV)
 
-		img = window
-		
-		ctl = img
-	
-
-		hsv = cv2.cvtColor(ctl, cv2.COLOR_BGR2HSV)
-
-		mask0 = cv2.inRange(hsv, yellow_lower, yellow_upper)
-
-		mask = mask0
-
-		mask_op = cv2.morphologyEx(mask , cv2.MORPH_OPEN, kernel_open)
-
+		mask = cv2.inRange(hsv, yellow_lower, yellow_upper)
+		mask_op = cv2.morphologyEx(mask.copy() , cv2.MORPH_OPEN, kernel_open)
 		mask_cl = cv2.morphologyEx(mask_op, cv2.MORPH_CLOSE, kernel_close)
 
 		Z = mask_cl.reshape((-1,1))
@@ -84,19 +73,13 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		center = np.uint8(palette)
 
 		res = center[labels.flatten()]
+		res = res.reshape((mask_cl.shape))
 
-		res2 = res.reshape((mask_cl.shape))
-
-		# cv2.imshow('res2',res2)
-
-
-		print('decision' + str(decision))
 		if decision==1:
 			flag = 0
-			# print(palette)
+
 			for i in palette:
 				if i[0]>=250:
-					# print(i)
 					if (flag==0):
 						maze[index[1]-1][index[0]-1] = 1		
 						cv2.rectangle(image, (x, y),(x + winW, y + winH), (255, 0, 0),-1)		
@@ -127,22 +110,8 @@ def main(source , dest, cap, grid_size,frame_width, frame_height,decision):
 		list2.append(tuple((x+1,y+1)))			#Contains min path + startimage + endimage
 	result = list(list2[1:-1]) 			#Result contains the minimum path required 
 
-	key = cv2.waitKey(1)
-
-	if key==27:
+	if cv2.waitKey(1) == 27:
 		cv2.destroyAllWindows()
 		cap.release()
 
-	return occupied_grids, list2
-
-
-
-if __name__ == '__main__':
-
-    # change filename to check for other images
-    image_filename = "test_images/test_image3.jpg"
-
-    main(image_filename)
-
-    cv2.waitKey(0)
-    
+	return occupied_grids, list2 

@@ -14,15 +14,34 @@ direction = {   STOP : "STOP",
                 LEFT : "LEFT"
             }
 
-
-# Setting up TCP connection
-TCP_IP = '192.168.43.208' # IP of raspberry pi
-TCP_PORT = 5005
-
-
 grid_size = 32
 frame_height= 640
 frame_width= 640
-decision = 1
+decision = 0
 
+
+# Setting up TCP connection for WASD control
+TCP_IP_RPI = '192.168.43.208' # IP of raspberry pi
+TCP_PORT_WASD = 5005
+
+
+# Setting up TCP connection for getting IMU data
+TCP_IP_WORKSTATION = '0.0.0.0'
+TCP_PORT_IMU_DATA = 5007 # Port number on which to send data
+BUFFER_SIZE = 200 # Normally 1024, but I want fast response
+
+
+
+############### Tracker Types #####################
+
+import cv2
+ 
+#tracker = cv2.TrackerBoosting_create()
+#tracker = cv2.TrackerMIL_create()
+tracker = cv2.TrackerKCF_create()
+#tracker = cv2.TrackerTLD_create()
+#tracker = cv2.TrackerMedianFlow_create()
+#tracker = cv2.TrackerCSRT_create()
+
+# tracker = cv2.TrackerMOSSE_create()
 
