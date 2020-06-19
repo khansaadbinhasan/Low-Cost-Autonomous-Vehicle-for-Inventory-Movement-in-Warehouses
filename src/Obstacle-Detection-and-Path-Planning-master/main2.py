@@ -4,12 +4,11 @@ import socket
 import time
 import rst
 
-# from numpy import array, dot, arccos, clip
-# from numpy.linalg import norm
-
 
 import process_image
-from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision, TCP_IP_RPI, TCP_PORT_WASD, TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA, BUFFER_SIZE, tracker, minTheta
+from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision,\
+                       TCP_IP_RPI, TCP_PORT_WASD, TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA, BUFFER_SIZE,\
+                       tracker, minTheta, runAlgorithm, stkr1minHSV, stkr1maxHSV, stkr2minHSV, stkr2maxHSV
 
 
 position = []
@@ -314,8 +313,10 @@ def run_tracker_algo(tracker, img, final_x, final_y, qt, grid_size, min_v):
     cX, cY = update_tracker_data(tracker, img)
 
     #This function is not working correctly
-    if destination_reached(cX, cY ,final_x, final_y):
+    if destination_reached(cX, cY ,final_x*grid_size, final_y*grid_size):
         print("destination Reached")
+        print(cX,cY)
+        print(final_x, final_y)
         return 'done'
 
 
@@ -334,14 +335,14 @@ def run_tracker_algo(tracker, img, final_x, final_y, qt, grid_size, min_v):
     return SEND_COMMAND
 
 
-def run_heading_algo(img, o1,o2, p1, p2, qt):
+def run_heading_algo(img, stkr1minHSV,stkr1maxHSV, stkr2minHSV, stkr2maxHSV, qt):
     x1, y1 = 0, 0
     x2, y2 = 0, 0
 
     try:
         # for drawing the matrix on to the frame
-        x1, y1, _ = rst.get_moments(img, o1, o2, 1)
-        x2, y2, _ = rst.get_moments(img, p1, p2, 2)
+        x1, y1, _ = rst.get_moments(img, stkr1minHSV, stkr1maxHSV, 1)
+        x2, y2, _ = rst.get_moments(img, stkr2minHSV, stkr2maxHSV, 2)
 
     except:
         pass
@@ -374,7 +375,7 @@ def main():
     SEND_COMMAND = STOP
     LAST_COMMAND = SEND_COMMAND
 
-    s = make_connections()
+    # s = make_connections()
 
     cap = cv2.VideoCapture(numCam)
 
@@ -385,36 +386,16 @@ def main():
 
     qt, path, pts = get_qt_path_pts(planned_path)
 
-    index = 0 # index of the list qt
-
-    # bbox = intialize_tracker(cap)
-
-    cX, cY = 0, 0
-
     min_v = 500
-    m_x, m_y = 0,0
-    cmd = 0
 
-    tempx, tempy = 0, 0
 
     # destination of the path to reach 
     final_x, final_y = qt[-1]
 
     (winW, winH) = (grid_size, grid_size)
 
-
-
-    # colors that need to adjusted
-
-    o1 = [0,196,206] 
-    o2 = [54,255,255]
-    p1 = [102,51,29] 
-    p2 = [146,183,87]
-    # o1 = [20,120,62] # green sticker
-    # o2 = [35,255,255]
-    # p1 = [107,120,16] # blue sticker
-    # p2 = [130,255,255]
-
+    if runAlgorithm == 'tracker':
+        bbox = intialize_tracker(cap)
 
     while True:
 
@@ -429,30 +410,19 @@ def main():
 
         img = cv2.polylines(img, [pts] , False, (255,120,255), 3)
 
-        # SEND_COMMAND = run_tracker_algo(tracker, img, final_x, final_y, qt, grid_size, min_v)
-        SEND_COMMAND = run_heading_algo(img, o1,o2, p1, p2, qt)
-        LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
+        if runAlgorithm == 'tracker':
+            SEND_COMMAND = run_tracker_algo(tracker, img, final_x, final_y, qt, grid_size, min_v)
 
-
-<<<<<<< HEAD
-=======
-        u = ( x2 - x1, y2 - y1 )
-        v = ( xt - next_x, yt - next_y )
-        result = get_result(u,v)
-        print(get_direc(result))
-        print(result)
->>>>>>> 9a8326d97031cbab8c5b5f77f3ca4b463c7a64f1
-
+        else:
+            SEND_COMMAND = run_heading_algo(img, stkr1minHSV,stkr1maxHSV, stkr2minHSV, stkr2maxHSV, qt)
+        
         if SEND_COMMAND == 'done':
             break
 
+        # LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
+
         # to print the direcction of the car
         print('Action ' + direction[SEND_COMMAND])
-        
-
-        # LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
-        # draw_circle_on_source(img, path)
- 
         
         cv2.imshow('window', img)
 
@@ -460,56 +430,8 @@ def main():
             break 
 
 
-<<<<<<< HEAD
-=======
-
-
-        # # this code is used for making grids
-        # for (x, y, window) in process_image.sliding_window(img, stepSize=grid_size, windowSize=(winW, winH)):
-        #     # if the window does not meet our desired window size, ignore it
-        #     if window.shape[0] != winH or window.shape[1] != winW:
-        #         continue
-
-        #     cv2.rectangle(img, (x, y), (x + winW, y + winH), (0, 255, 0), 2)
-
-
-        # if index < len(qt) - 1:
-        #     # assume vehicle did not stop at any of the subgoal
-        #     if distance(tempx, tempy ,cX, cY) < grid_size:
-        #         print('next point')
-        #         index += 1
-        #         min_v = 500
-
-        #     tempx, tempy = qt[index]
-        #     tempx, tempy = tempx*grid_size, tempy*grid_size
-
-        #     draw_pos_info(img, cX, cY, tempx, tempy)
-        #     SEND_COMMAND = get_cmd(cX, cY, min_v, tempx, tempy)
-
-        # # to print the direcction of the car
-        # print('Action ' + direction[SEND_COMMAND])
-     
-        # if LAST_COMMAND != SEND_COMMAND:# or timeElapsed % 3 == 0 :
-        #     # s.send(SEND_COMMAND.encode())
-        #     LAST_COMMAND = SEND_COMMAND
-
-        # if len(path):
-        #     for i in range(len(path)):
-        #         source = (path[i][0], path[i][1])
-        #         if i==0 or i==len(path)-1:
-        #             cv2.circle(img,source, 2, (255, 0, 0), 10)
-        #         else:
-        #             cv2.circle(img,source, 2, (255, 0, 0), 2) 
-        
-        # cv2.imshow('window', img)
-
-        # if cv2.waitKey(2) & 0xFF == 27:
-        #     break 
-
-
->>>>>>> 9a8326d97031cbab8c5b5f77f3ca4b463c7a64f1
     SEND_COMMAND = STOP
-    finish(s, cap, SEND_COMMAND)
+    # finish(s, cap, SEND_COMMAND)
     # finish(conn, s, cap, SEND_COMMAND)
 
 if __name__ == '__main__':

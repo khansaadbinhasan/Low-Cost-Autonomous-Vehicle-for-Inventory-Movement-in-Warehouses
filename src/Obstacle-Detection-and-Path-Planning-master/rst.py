@@ -23,14 +23,14 @@ def get_moments(img, param1, param2, mode=0):
     res = cv2.morphologyEx(res, cv2.MORPH_OPEN, kernel_open)
     res = cv2.morphologyEx(res, cv2.MORPH_CLOSE, kernel)
     res = cv2.GaussianBlur(res, (5, 5), 0)
-    cv2.imshow("res", res)
+    # cv2.imshow("window", res)
 
     if mode > 0:
         f_name = 'Position/Start'+str(mode)+'.jpg'
         cv2.imwrite(f_name, res)
 
     gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
-    cv2.imshow("gray", gray)
+    # cv2.imshow("imshow", gray)
     ret, thresh = cv2.threshold(gray, 10, 255, cv2.THRESH_TOZERO)
 
     # Finding the centroid of the masked region by finding contours

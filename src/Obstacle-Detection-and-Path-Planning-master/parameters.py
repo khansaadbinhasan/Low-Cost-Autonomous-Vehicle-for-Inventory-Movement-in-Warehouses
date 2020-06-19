@@ -46,3 +46,13 @@ tracker = cv2.TrackerKCF_create()
 # tracker = cv2.TrackerMOSSE_create()
 
 minTheta = 15
+
+
+stkr1minHSV = [0,196,206] 
+stkr1maxHSV = [54,255,255]
+stkr2minHSV = [102,51,29] 
+stkr2maxHSV = [146,183,87]
+
+
+# runAlgorithm = 'tracker'
+runAlgorithm = 'heading'
