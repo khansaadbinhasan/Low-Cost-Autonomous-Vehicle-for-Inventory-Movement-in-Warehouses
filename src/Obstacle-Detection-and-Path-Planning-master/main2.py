@@ -1,4 +1,5 @@
 import cv2, imutils
+import matplotlib.pyplot as plt
 import numpy as np
 import socket
 import time
@@ -46,6 +47,27 @@ def drawBox(img,bbox):
     x, y, w, h = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
     cv2.rectangle(img, (x, y), ((x + w), (y + h)), (255, 0, 255), 3, 3 )
     cv2.putText(img, "Tracking", (100, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
+
+def make_graph(x, y, pts):
+  plt.plot(x, y);
+  
+  p1 = list()
+  p2 = list()
+  
+  for i , j in pts:
+    p1.append(i)
+    p2.append(j)
+  
+  plt.plot(p1, p2)
+
+  plt.xlabel('x-coordinate');
+  plt.ylabel('y-coordinate');
+
+  plt.title('Experimental Trajectory')
+
+  plt.show()
+
 
 def distance(x1,y1,x2,y2):
     return np.sqrt((x2-x1)**2+(y2-y1)**2)
@@ -350,6 +372,7 @@ def run_heading_algo(img, stkr1minHSV,stkr1maxHSV, stkr2minHSV, stkr2maxHSV, qt)
     xt = (x1+x2)//2
     yt = (y1+y2)//2
 
+
     cv2.circle(img,(int(xt), int(yt)), 2, (0, 255, 0), 5)
 
     next_x, next_y = next_point(img, qt, xt, yt)
@@ -367,7 +390,7 @@ def run_heading_algo(img, stkr1minHSV,stkr1maxHSV, stkr2minHSV, stkr2maxHSV, qt)
     img = cv2.line(img, (xt, yt),(next_x, next_y),(0,0,255), 3)
 
 
-    return SEND_COMMAND
+    return SEND_COMMAND, xt, yt
 
 
 
@@ -387,6 +410,9 @@ def main():
     qt, path, pts = get_qt_path_pts(planned_path)
 
     min_v = 500
+
+    x_act = list()
+    y_act = list()
 
 
     # destination of the path to reach 
@@ -414,13 +440,14 @@ def main():
             SEND_COMMAND = run_tracker_algo(tracker, img, final_x, final_y, qt, grid_size, min_v)
 
         else:
-            SEND_COMMAND = run_heading_algo(img, stkr1minHSV,stkr1maxHSV, stkr2minHSV, stkr2maxHSV, qt)
+            SEND_COMMAND, xt, yt = run_heading_algo(img, stkr1minHSV,stkr1maxHSV, stkr2minHSV, stkr2maxHSV, qt)
+            x_act.append(xt)
+            y_act.append(yt)
         
         if SEND_COMMAND == 'done':
             break
 
         # LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
-
         # to print the direcction of the car
         print('Action ' + direction[SEND_COMMAND])
         
@@ -430,6 +457,11 @@ def main():
             break 
 
 
+
+    # can be used to make the graph of the actual and experimental path  
+    
+    # make_graph(x_act, y_act, pts)
+    
     SEND_COMMAND = STOP
     # finish(s, cap, SEND_COMMAND)
     # finish(conn, s, cap, SEND_COMMAND)
