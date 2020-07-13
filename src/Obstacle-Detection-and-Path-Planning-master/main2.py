@@ -9,7 +9,7 @@ import rst
 import process_image
 from parameters import numCam, STOP, UP, DOWN, RIGHT, LEFT, direction, grid_size, frame_height, frame_width, decision,\
                        TCP_IP_RPI, TCP_PORT_WASD, TCP_IP_WORKSTATION, TCP_PORT_IMU_DATA, BUFFER_SIZE,\
-                       tracker, minTheta, runAlgorithm, stkr1minHSV, stkr1maxHSV, stkr2minHSV, stkr2maxHSV
+                       tracker, minTheta, runAlgorithm, stkr1minHSV, stkr1maxHSV, stkr2minHSV, stkr2maxHSV, folderNum
 
 
 position = []
@@ -50,23 +50,45 @@ def drawBox(img,bbox):
 
 
 def make_graph(x, y, pts):
-  plt.plot(x, y);
-  
-  p1 = list()
-  p2 = list()
-  
-  for i , j in pts:
-    p1.append(i)
-    p2.append(j)
-  
-  plt.plot(p1, p2)
+    plt.plot(x, y);
 
-  plt.xlabel('x-coordinate');
-  plt.ylabel('y-coordinate');
+    p1 = list()
+    p2 = list()
 
-  plt.title('Experimental Trajectory')
+    for i , j in pts:
+        p1.append(i)
+        p2.append(j)
 
-  plt.show()
+    plt.plot(p1, p2)
+
+    plt.xlabel('x-coordinate');
+    plt.ylabel('y-coordinate');
+
+    plt.title('Experimental Trajectory')
+
+    filePath = str(folderNum) + '/' + 'graph.png'
+
+    plt.savefig(filePath)
+
+    
+    print(p1)
+    print(p2)
+
+    # filePath = str(folderNum) + '/' + 'xyVals.txt'
+
+
+    # with open(filePath, "a") as outfile:
+    #     outfile.write(p1)
+    #     outfile.append("\n\n")
+    #     outfile.append(p2)
+
+
+
+
+
+# def get_folder_num():
+
+
 
 
 def distance(x1,y1,x2,y2):
@@ -101,6 +123,10 @@ def draw_source_dest(cap):
     while True:
 
         _, frame = cap.read()
+
+        # print(frame.shape)
+
+        # cv2.imshow(frame, 'eh')
 
         frame = cv2.resize(frame,(frame_width, frame_height))
         
@@ -308,6 +334,9 @@ def get_result(u,v):
 
 
 def send_command(s, LAST_COMMAND, SEND_COMMAND):
+    if SEND_COMMAND == DOWN:
+        SEND_COMMAND = UP
+
     if LAST_COMMAND != SEND_COMMAND:
         s.send(SEND_COMMAND.encode())
         LAST_COMMAND = SEND_COMMAND
@@ -398,7 +427,7 @@ def main():
     SEND_COMMAND = STOP
     LAST_COMMAND = SEND_COMMAND
 
-    # s = make_connections()
+    s = make_connections()
 
     cap = cv2.VideoCapture(numCam)
 
@@ -423,6 +452,16 @@ def main():
     if runAlgorithm == 'tracker':
         bbox = intialize_tracker(cap)
 
+    size = (frame_width, frame_height) 
+
+    # folderNum = get_folder_num()
+
+    filePath = str(folderNum) + '/' + 'video.mp4'
+
+    result = cv2.VideoWriter(filePath,  
+                             cv2.VideoWriter_fourcc(*'MP4V'), 
+                             20, size)
+
     while True:
 
         # accel, gyro, mag, temp = get_IMU_data(conn)
@@ -432,6 +471,7 @@ def main():
         img = cv2.resize(img,(frame_width, frame_height))
 
         draw_circle_on_source(img, path)
+        result.write(img)
         make_grids(img, grid_size, winW, winH)
 
         img = cv2.polylines(img, [pts] , False, (255,120,255), 3)
@@ -447,7 +487,7 @@ def main():
         if SEND_COMMAND == 'done':
             break
 
-        # LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
+        LAST_COMMAND = send_command(s, LAST_COMMAND, SEND_COMMAND)
         # to print the direcction of the car
         print('Action ' + direction[SEND_COMMAND])
         
@@ -460,10 +500,10 @@ def main():
 
     # can be used to make the graph of the actual and experimental path  
     
-    # make_graph(x_act, y_act, pts)
+    make_graph(x_act, y_act, pts)
     
     SEND_COMMAND = STOP
-    # finish(s, cap, SEND_COMMAND)
+    finish(s, cap, SEND_COMMAND)
     # finish(conn, s, cap, SEND_COMMAND)
 
 if __name__ == '__main__':

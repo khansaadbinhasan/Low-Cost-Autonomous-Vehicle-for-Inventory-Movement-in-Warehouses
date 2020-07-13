@@ -1,5 +1,7 @@
 numCam = 1
 
+folderNum = 10
+
 STOP = '0'
 UP = '1'
 DOWN = '2'
@@ -14,7 +16,7 @@ direction = {   STOP : "STOP",
                 LEFT : "LEFT"
             }
 
-grid_size = 32
+grid_size = 64
 frame_height= 640
 frame_width= 640
 decision = 0
