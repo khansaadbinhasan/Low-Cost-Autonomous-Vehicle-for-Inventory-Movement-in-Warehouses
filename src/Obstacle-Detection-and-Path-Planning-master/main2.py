@@ -307,6 +307,7 @@ def angle_between(u, v):
     return angle_degs
 
 
+    
 def get_result(u,v):
     
     angle_btw = angle_between(u,v)
@@ -315,7 +316,7 @@ def get_result(u,v):
 
     result = STOP
 
-    if angle_btw > 180 - minTheta and angle_btw < 180 + minTheta:
+    if (angle_btw > 180 - minTheta and angle_btw < 180) or (angle_btw < -(180 - minTheta) and angle_btw > -180):
         result = UP
 
     elif angle_btw < 180 - minTheta and angle_btw > minTheta:
