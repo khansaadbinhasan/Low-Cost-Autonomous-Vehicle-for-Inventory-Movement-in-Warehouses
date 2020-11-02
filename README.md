@@ -29,7 +29,7 @@ The computed path is shown in orange color and the actual path traversed by the 
 
 <img src="./READMErsc/graph1.png" width=33%>
 <img src="./READMErsc/graph2.png" width=33%>
-<img src="./READMErsc/graph3.png" width=33%>
+<img src="./READMErsc/graph3.png" width=33% float=right>
 
 Out of 10 times, The robot was able to reach the destination 6 times. Hence, the accuracy of our model should be close to 60%. The robot is built with cheap hardware which is easily available making our robot very affordable. The robot also uses an overhead camera which facilitates greater scalability
 
