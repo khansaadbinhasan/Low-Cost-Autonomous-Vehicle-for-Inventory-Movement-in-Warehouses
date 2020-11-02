@@ -48,3 +48,9 @@ Out of 10 times, The robot was able to reach the destination 6 times. Hence, the
 
 We have built a cheap and fairly accurate robot. It is versatile and can work in varied environments. Given the backup system and an overhead camera, the robot is fairly secure and scalable.​ The scope of the work can be enhanced in the future by employing novel ways of increasing accuracy with little changes in cost.​
 
+
+<!-- ## More Information
+
+Please see my ![Project Report]() for more detailed information about this project. A paper was also published in ... titled ... You can Find it here ... You can also find the presentation for the paper here ...
+
+Please cite as ... -->
