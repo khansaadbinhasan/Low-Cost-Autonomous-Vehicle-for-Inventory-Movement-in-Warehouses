@@ -15,7 +15,7 @@ The Source and Destination are provided by the user in the environment visible t
 A colored marker is placed on the robot which is used to estimate the robot’s location and the heading. A line is drawn from the yellow to the purple marker which gives the Heading. The decision to move the next step is taken using the heading of the robot, the robot’s current location, and the next coordinate in the path to follow. 
 Illustration.png
 
-<img src="./READMErsc/Illustration.png">
+<img src="./READMErsc/Illustration.jpg">
 
 ## Evaluation Parameters
 •Cost and Accuracy: There is a trade-off between the accuracy of the robot and the cost required to build it. 
