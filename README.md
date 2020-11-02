@@ -18,10 +18,10 @@ Illustration.png
 <img src="./READMErsc/Illustration.jpg" width=50% align=center>
 
 ## Evaluation Parameters
-•Cost and Accuracy: There is a trade-off between the accuracy of the robot and the cost required to build it. 
-•Scalability: Using an overhead camera for tracking, robots can easily be scaled up, to track and guide multiple robots.
-•Backup system: Redundancy should be available that could be used in case of any failure with the primary system. 
-•Path Following and Reaching Destination: To track the deviation while the robot is traversing the estimated path and check whether the robot can reach the destination or not. 
+* Cost and Accuracy: There is a trade-off between the accuracy of the robot and the cost required to build it. 
+* Scalability: Using an overhead camera for tracking, robots can easily be scaled up, to track and guide multiple robots.
+* Backup system: Redundancy should be available that could be used in case of any failure with the primary system. 
+* Path Following and Reaching Destination: To track the deviation while the robot is traversing the estimated path and check whether the robot can reach the destination or not. 
 
 ## Evaluating Model 
 We Evaluate the results on the success rate of the robot in reaching the destination and the deviation in the path to reach the destination. We have considered that if the distance between the robot and destination is less than 20cm or 100px, then the robot is on the destination point. We draw the path that the robot should move on and the path that the robot moved on. We compare these paths to measure how close the robot was to the destination.
