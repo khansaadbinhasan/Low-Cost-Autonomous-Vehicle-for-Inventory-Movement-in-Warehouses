@@ -1,4 +1,11 @@
-# Major-Project
+# Low-Cost Autonomous Vehicle for Inventory Movement in Warehouses
+
+* [Project Objectives](#project-objectives)
+* [Our Model](#our-model)
+* [Evaluation Parameters](#evaluation-parameters)
+* [Evaluating Model ](#evaluating-model)
+* [Conclusion and Further work](#conclusion-and-further-work)
+
 
 ## Project Objectives
 Automation can help Warehouses become more efficient, productive, robust, and cost-effective. A variety of Autonomous Robots are used in large warehouses which can be expensive. We intend to build cost-effective Autonomous Robots for small and medium scale Warehouses with reasonable accuracy.
