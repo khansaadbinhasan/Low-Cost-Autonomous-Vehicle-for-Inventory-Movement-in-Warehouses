@@ -14,15 +14,11 @@ The robot is monitored by the camera, which sends the stream to the workstation.
 The Source and Destination are provided by the user in the environment visible to the camera. A path is made from source to destination using the A-star Algorithm.
 A colored marker is placed on the robot which is used to estimate the robot’s location and the heading. A line is drawn from the yellow to the purple marker which gives the Heading. The decision to move the next step is taken using the heading of the robot, the robot’s current location, and the next coordinate in the path to follow. 
 
-<img src="./READMErsc/Illustration.jpg" class=center>
-<style type="text/css">
-	.center {
-	  display: block;
-	  margin-left: auto;
-	  margin-right: auto;
-	  width: 50%;
-	}
-</style>
+
+<p align="center">
+  <img src="./READMErsc/Illustration.jpg" width=50%>
+</p>
+
 
 ## Evaluation Parameters
 * **Cost and Accuracy:** There is a trade-off between the accuracy of the robot and the cost required to build it. 
