@@ -1,10 +1,10 @@
 # Low-Cost Autonomous Vehicle for Inventory Movement in Warehouses
 
-* [Project Objectives](#project-objectives)
-* [Our Model](#our-model)
-* [Evaluation Parameters](#evaluation-parameters)
-* [Evaluating Model ](#evaluating-model)
-* [Conclusion and Further work](#conclusion-and-further-work)
+* [__Project Objectives__](#project-objectives)
+* [__Our Model__](#our-model)
+* [__Evaluation Parameters__](#evaluation-parameters)
+* [__Evaluating Model__](#evaluating-model)
+* [__Conclusion and Further work__](#conclusion-and-further-work)
 
 
 ## Project Objectives
