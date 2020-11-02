@@ -5,7 +5,7 @@ Automation can help Warehouses become more efficient, productive, robust, and co
 
 ## Our Model
 
-<img src="READMErsc/robot_diagram_bb.png">
+<img src="./READMErsc/robot_diagram_bb.png">
 
 The robot is monitored by the camera, which sends the stream to the workstation. Using the procedure described below, the workstation sends a command(UP, DOWN, LEFT, RIGHT) to the rpi via a TCP connection. The rpi then sends this command to the Arduino. The Arduino then sends a message to motor drivers accordingly. IMUs and Wheel Encoders are attached to the robot, which sends data to the rpi via an I2C connection. The Arduino is also connected to two servo motors mounted at the front and back. Two ultrasonic sensors are also connected to the servos. This arrangement can be used for backup and collision avoidance.
 
