@@ -77,8 +77,8 @@ We have built a cheap and fairly accurate robot. It is versatile and can work in
 
 ## More Information
 
-Please see my ![Project Report](https://docs.google.com/document/d/1Ga6hZdya4-FO2D3pxWp_QicPi5e_mkiPZHorXCSN8MU/edit?usp=sharing) for more detailed information about this project. 
+Please see my [Project Report](https://docs.google.com/document/d/1Ga6hZdya4-FO2D3pxWp_QicPi5e_mkiPZHorXCSN8MU/edit?usp=sharing) for more detailed information about this project. 
 
 <!-- A paper was also published in ... titled ... You can Find it here ... You can also find the presentation for the paper here ... Please cite as ... -->
 
-Please refer to ![this playlist](https://www.youtube.com/playlist?list=PLMkePoybCpm4CkMRtGrQV7CXr9gtPblFH) to learn more about the robot
+Please refer to [this playlist](https://www.youtube.com/playlist?list=PLMkePoybCpm4CkMRtGrQV7CXr9gtPblFH) to learn more about the robot
