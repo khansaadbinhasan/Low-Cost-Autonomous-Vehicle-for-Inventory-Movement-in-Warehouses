@@ -67,7 +67,7 @@ Out of 10 times, The robot was able to reach the destination 6 times. Hence, the
 * Upload `src/rpi/Important/master.py` to raspberry pi and run it. This would wait for a connection to the address specified in the code. 
 * Connect a camera to the workstation and place it so that the robot is clearly visible.
 * Run `Major-Project/src/Workstation/Important/Obstacle Detection` and `Path Planning/main2.py`, you may want to configure the `IP address` and `port` in `parameters.py` as well. 
-* A window will appear showing the stream from the camera. Double-click on the window at the starting point of the robot and the destination. Press `Esc`. Now a path appears and the robot starts moving toward the destination. The robot should move as shown in ![this video](https://www.youtube.com/watch?v=GJ0nYhXhNK4&list=PLMkePoybCpm4CkMRtGrQV7CXr9gtPblFH&index=5)
+* A window will appear showing the stream from the camera. Double-click on the window at the starting point of the robot and the destination. Press `Esc`. Now a path appears and the robot starts moving toward the destination. The robot should move as shown in [this video](https://www.youtube.com/watch?v=GJ0nYhXhNK4&list=PLMkePoybCpm4CkMRtGrQV7CXr9gtPblFH&index=5)
 
 
 ## Conclusion and Further work
