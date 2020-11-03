@@ -6,7 +6,7 @@
 * [__Evaluating Model__](#evaluating-model)
 * [__About this repository__](#about-this-repository)
 * [__Conclusion and Further work__](#conclusion-and-further-work)
-
+* [__More Information__](#more-information)
 
 ## Project Objectives
 
@@ -67,7 +67,7 @@ Out of 10 times, The robot was able to reach the destination 6 times. Hence, the
 * To run this code, upload `src/rpi/Important/master.py` to raspberry pi and run it. This would wait for a connection to the address specified in the code. 
 * You would have to connect a camera to the workstation and place it so that the robot is clearly visible.
 * Then run `Major-Project/src/Workstation/Important/Obstacle Detection` and `Path Planning/main2.py`, you may want to configure the `IP address` and `port` in `parameters.py` as well. 
-* A window will appear showing the stream from the camera. Double-click on the window at the starting point of the robot and the destination. Press `Esc`. Now a path appears and the robot starts moving toward the destination.
+* A window will appear showing the stream from the camera. Double-click on the window at the starting point of the robot and the destination. Press `Esc`. Now a path appears and the robot starts moving toward the destination. The robot should move as shown in ![this video](https://www.youtube.com/watch?v=GJ0nYhXhNK4&list=PLMkePoybCpm4CkMRtGrQV7CXr9gtPblFH&index=5)
 
 
 ## Conclusion and Further work
@@ -75,8 +75,10 @@ Out of 10 times, The robot was able to reach the destination 6 times. Hence, the
 We have built a cheap and fairly accurate robot. It is versatile and can work in varied environments. Given the backup system and an overhead camera, the robot is fairly secure and scalable.​ The scope of the work can be enhanced in the future by employing novel ways of increasing accuracy with little changes in cost.​
 
 
-<!-- ## More Information
+## More Information
 
-Please see my ![Project Report]() for more detailed information about this project. A paper was also published in ... titled ... You can Find it here ... You can also find the presentation for the paper here ...
+Please see my ![Project Report](https://docs.google.com/document/d/1Ga6hZdya4-FO2D3pxWp_QicPi5e_mkiPZHorXCSN8MU/edit?usp=sharing) for more detailed information about this project. 
 
-Please cite as ... -->
+<!-- A paper was also published in ... titled ... You can Find it here ... You can also find the presentation for the paper here ... Please cite as ... -->
+
+Please refer to ![this playlist](https://www.youtube.com/playlist?list=PLMkePoybCpm4CkMRtGrQV7CXr9gtPblFH) to learn more about the robot
