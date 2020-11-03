@@ -4,6 +4,7 @@
 * [__Our Model__](#our-model)
 * [__Evaluation Parameters__](#evaluation-parameters)
 * [__Evaluating Model__](#evaluating-model)
+* [__About this repository__](#about-this-repository)
 * [__Conclusion and Further work__](#conclusion-and-further-work)
 
 
@@ -47,26 +48,26 @@ Out of 10 times, The robot was able to reach the destination 6 times. Hence, the
 
 ## About this repository
 
-* rsc contains images and other files used for aid in building the model and documenting the work.
-* src contains the source code of the project consisting of three folders:
-	* Arduino contains the code to be uploaded to Arduino. Arduino further contains three folders:
-		* Misc Codes contains code that was used to learn about libraries. Most of these are taken from tutorials easily found online. It also contains code that is no longer used in the robot but was used for testing at some point. It contains code to get data from ultrasonic sensors, move servos, move motors, etc.
-		* libs contain the libraries that were used in the Arduino Project.
-		* Important contains the code that was at some point used in the project and still holds importance. It can be used to test various parts of the robot. For example- to move the robot, rotate ultrasonic sensors, etc.
+* **rsc** contains images and other files used for aid in building the model and documenting the work.
+* **src** contains the source code of the project consisting of three folders:
+	* **Arduino** contains the code to be uploaded to Arduino. Arduino further contains three folders:
+		* **Misc Codes** contains code that was used to learn about libraries. Most of these are taken from tutorials easily found online. It also contains code that is no longer used in the robot but was used for testing at some point. It contains code to get data from ultrasonic sensors, move servos, move motors, etc.
+		* **libs** contain the libraries that were used in the Arduino Project.
+		* **Important** contains the code that was at some point used in the project and still holds importance. It can be used to test various parts of the robot. For example- to move the robot, rotate ultrasonic sensors, etc.
 
-	* Workstation contains two folders:
-		* Important contains the final code that was used in the workstation. 
-		* Misc Codes contains code that was used to learn about modules and to test the robot. Some of the code was previously used.
+	* **Workstation** contains two folders:
+		* **Important** contains the final code that was used in the workstation. 
+		* **Misc Codes** contains code that was used to learn about modules and to test the robot. Some of the code was previously used.
 
-	* rpi contains two folders:
-		* Important contains the final code that was used in the raspberry pi.
-		* Misc Codes contains code that was used to learn about modules and to test the robot. Some of the code was previously used.
+	* **rpi** contains two folders:
+		* **Important** contains the final code that was used in the raspberry pi.
+		* **Misc Codes** contains code that was used to learn about modules and to test the robot. Some of the code was previously used.
 
-* Upload Major-Project/src/Arduino/important/MotionWithRotatingHCSR04/MotionWithRotatingHCSR04.ino to Arduino UNO.
-* To run this code, upload src/rpi/Important/master.py to raspberry pi and run it. This would wait for a connection to the address specified in the code. 
+* Upload `Major-Project/src/Arduino/important/MotionWithRotatingHCSR04/MotionWithRotatingHCSR04.ino` to Arduino UNO.
+* To run this code, upload `src/rpi/Important/master.py` to raspberry pi and run it. This would wait for a connection to the address specified in the code. 
 * You would have to connect a camera to the workstation and place it so that the robot is clearly visible.
-* Then run Major-Project/src/Workstation/Important/Obstacle Detection and Path Planning/main2.py, you may want to configure the IP address and port in parameters.py as well. 
-* A window will appear showing the stream from the camera. Double-click on the window at the starting point of the robot and the destination. Press Esc. Now a path appears and the robot starts moving toward the destination.
+* Then run `Major-Project/src/Workstation/Important/Obstacle Detection` and `Path Planning/main2.py`, you may want to configure the `IP address` and `port` in `parameters.py` as well. 
+* A window will appear showing the stream from the camera. Double-click on the window at the starting point of the robot and the destination. Press `Esc`. Now a path appears and the robot starts moving toward the destination.
 
 
 ## Conclusion and Further work
