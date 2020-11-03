@@ -8,6 +8,7 @@
 
 
 ## Project Objectives
+
 Automation can help Warehouses become more efficient, productive, robust, and cost-effective. A variety of Autonomous Robots are used in large warehouses which can be expensive. We intend to build cost-effective Autonomous Robots for small and medium scale Warehouses with reasonable accuracy.
 
 ## Our Model
@@ -28,12 +29,14 @@ A colored marker is placed on the robot which is used to estimate the robot’s 
 
 
 ## Evaluation Parameters
+
 * **Cost and Accuracy:** There is a trade-off between the accuracy of the robot and the cost required to build it. 
 * **Scalability:** Using an overhead camera for tracking, robots can easily be scaled up, to track and guide multiple robots.
 * **Backup system:** Redundancy should be available that could be used in case of any failure with the primary system. 
 * **Path Following and Reaching Destination:** To track the deviation while the robot is traversing the estimated path and check whether the robot can reach the destination or not. 
 
 ## Evaluating Model 
+
 We Evaluate the results on the success rate of the robot in reaching the destination and the deviation in the path to reach the destination. We have considered that if the distance between the robot and destination is less than 20cm or 100px, then the robot is on the destination point. We draw the path that the robot should move on and the path that the robot moved on. We compare these paths to measure how close the robot was to the destination.
 The computed path is shown in orange color and the actual path traversed by the robot is shown using the blue color. 
 
@@ -42,6 +45,28 @@ The computed path is shown in orange color and the actual path traversed by the 
 
 Out of 10 times, The robot was able to reach the destination 6 times. Hence, the accuracy of our model should be close to 60%. The robot is built with cheap hardware which is easily available making our robot very affordable. The robot also uses an overhead camera which facilitates greater scalability
 
+## About this repository
+
+* rsc contains images and other files used for aid in building the model and documenting the work.
+* src contains the source code of the project consisting of three folders:
+	* Arduino contains the code to be uploaded to Arduino. Arduino further contains three folders:
+		* Misc Codes contains code that was used to learn about libraries. Most of these are taken from tutorials easily found online. It also contains code that is no longer used in the robot but was used for testing at some point. It contains code to get data from ultrasonic sensors, move servos, move motors, etc.
+		* libs contain the libraries that were used in the Arduino Project.
+		* Important contains the code that was at some point used in the project and still holds importance. It can be used to test various parts of the robot. For example- to move the robot, rotate ultrasonic sensors, etc.
+
+	* Workstation contains two folders:
+		* Important contains the final code that was used in the workstation. 
+		* Misc Codes contains code that was used to learn about modules and to test the robot. Some of the code was previously used.
+
+	* rpi contains two folders:
+		* Important contains the final code that was used in the raspberry pi.
+		* Misc Codes contains code that was used to learn about modules and to test the robot. Some of the code was previously used.
+
+* Upload Major-Project/src/Arduino/important/MotionWithRotatingHCSR04/MotionWithRotatingHCSR04.ino to Arduino UNO.
+* To run this code, upload src/rpi/Important/master.py to raspberry pi and run it. This would wait for a connection to the address specified in the code. 
+* You would have to connect a camera to the workstation and place it so that the robot is clearly visible.
+* Then run Major-Project/src/Workstation/Important/Obstacle Detection and Path Planning/main2.py, you may want to configure the IP address and port in parameters.py as well. 
+* A window will appear showing the stream from the camera. Double-click on the window at the starting point of the robot and the destination. Press Esc. Now a path appears and the robot starts moving toward the destination.
 
 
 ## Conclusion and Further work
