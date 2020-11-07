@@ -81,4 +81,6 @@ Please see my [Project Report](https://docs.google.com/document/d/1Ga6hZdya4-FO2
 
 <!-- A paper was also published in ... titled ... You can Find it here ... You can also find the presentation for the paper here ... Please cite as ... -->
 
-Please refer to [this playlist](https://www.youtube.com/playlist?list=PLMkePoybCpm4CkMRtGrQV7CXr9gtPblFH) to learn more about the robot
+Please refer to [this playlist](https://www.youtube.com/playlist?list=PLMkePoybCpm4CkMRtGrQV7CXr9gtPblFH) to learn more about the robot.
+
+You can also find the [presentation for the paper](https://www.slideshare.net/khansaadbinhasan/lowcost-autonomous-vehicle-for-inventory-movement-in-warehouses) 
